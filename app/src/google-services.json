@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "772687013551",
+    "firebase_url": "https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "todalivery-market-delive-ace4f",
+    "storage_bucket": "todalivery-market-delive-ace4f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772687013551:android:7715096e9c6ee8401b965a",
+        "android_client_info": {
+          "package_name": "com.todaliveryph.todaliverymarketdeliveryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772687013551-d6sigeon3o2e01n8ass0pbmk4mk10050.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.todaliveryph.todaliverymarketdeliveryapp",
+            "certificate_hash": "4872a9a39425c690f835fa49cdc1aad7534e4a30"
+          }
+        },
+        {
+          "client_id": "772687013551-9kvt4gra67k16a3lqvdgdu1mmdr2khio.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-qD9p1rLcRCa09_wpsoYM25QmU1ezMBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772687013551-9kvt4gra67k16a3lqvdgdu1mmdr2khio.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

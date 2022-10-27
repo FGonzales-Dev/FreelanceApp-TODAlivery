@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.OrderDetailsSellerActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_rec01"
+        android:padding="10dp">
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/backBtn"
+            android:background="@null"
+            android:src="@drawable/back_btn"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Order Details"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/editBtn"
+            android:background="@null"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_baseline_edit_24"
+            />
+
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="3dp"
+        app:contentPadding="5dp">
+
+       <TableLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Order ID :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/orderIdTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Order ID"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Date :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/dateTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="dd/mm/yyyy"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Order Status :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/orderStatusTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Pending"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Customer Name :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/nameTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Juan Ponce Enrile"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Phone :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/phoneTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="09052268741"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Items :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/totalItemsTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="100"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Items amount :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/amountTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="9999"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Delivery Address :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/addressTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Magallanes Street Quezon City"
+                   android:layout_weight="1"/>
+           </TableRow>
+
+       </TableLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Ordered Items"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:padding="5dp"
+        android:textStyle="bold"/>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/itemsRv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="15dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/btnAcceptOrder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/row_ordereditem" />
+
+        <Button
+            android:id="@+id/btnDeclineOrder"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="250dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/color_Red"
+            android:text="DECLINE"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <Button
+            android:id="@+id/btnAcceptOrder"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="250dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/green"
+            android:text="ACCEPT"
+            app:layout_constraintBottom_toTopOf="@+id/btnDeclineOrder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>
