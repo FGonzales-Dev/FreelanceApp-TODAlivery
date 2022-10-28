@@ -34,6 +34,7 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rellay">
@@ -153,6 +154,39 @@
                 android:text="Register" />
         </RelativeLayout>
     </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/otpVerificationView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_below="@id/rellay"
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/otpET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/shape_rec02"
+            android:drawableStart="@drawable/ic_baseline_notes_24"
+            android:drawablePadding="5dp"
+            android:hint="Enter OTP"
+            android:padding="10dp" />
+
+        <Button
+            android:id="@+id/verifyOtpBTN"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Verify" />
+
+    </LinearLayout>
 
 
 
