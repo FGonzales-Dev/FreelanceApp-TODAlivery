@@ -187,8 +187,30 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
                                         if (otpFromDb.equals(otpET.getText().toString())){
 
                                             Toast.makeText(RegisterRiderActivity.this,"You are verified", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(RegisterRiderActivity.this, MainRiderActivity.class));
-                                            finish();
+
+                                            HashMap<String, Object> hashMap = new HashMap<>();
+
+                                            hashMap.put("isNumberVerified","true");
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+                                            ref.child(firebaseAuth.getUid()).updateChildren(hashMap)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            // db updated
+                                                            startActivity(new Intent(RegisterRiderActivity.this, MainRiderActivity.class));
+                                                            finish();
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            //db failed to update
+                                                            progressDialog.dismiss();
+                                                            startActivity(new Intent(RegisterRiderActivity.this, MainRiderActivity.class));
+                                                            finish();
+                                                            Toast.makeText(RegisterRiderActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+
                                             progressDialog.dismiss();
                                         }else {
                                             Toast.makeText(RegisterRiderActivity.this,"Otp is not match", Toast.LENGTH_SHORT).show();
