@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/rellay"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/shape_rec01"
+        android:padding="10dp">
+
+        <ImageButton
+            android:id="@+id/backBTN"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@null"
+            android:src="@drawable/back_btn" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="TODA Driver"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rellay">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/delivery_rider"/>
+
+            <TextView
+                android:id="@+id/driverTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Matched Driver:"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:textSize="25sp"
+                android:textColor="@color/black"
+                />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/driverContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20sp"
+                android:layout_below="@id/driverTitle"
+                app:cardElevation="10dp"
+                android:backgroundTint="@color/colorWhite">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/driverNameTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="No driver yet"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:id="@+id/driverNumberTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Empty"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/driverIDTV"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:id="@+id/driverRouteTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Empty"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/driverNumberTV"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:id="@+id/driverIDTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Empty"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/driverNameTV"
+                        android:gravity="center"
+                        android:textSize="10sp"
+                        android:textColor="@color/black"
+                        />
+
+
+
+                </RelativeLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/statusTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Driver Status:"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:layout_below="@id/driverContainer"
+                android:textSize="25sp"
+                android:textColor="@color/black"
+                />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/statusContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20sp"
+                android:layout_below="@id/statusTitle"
+                app:cardElevation="10dp"
+                android:backgroundTint="@color/colorWhite">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/driverStatusTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/green"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/driverStatusNoteTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:layout_below="@id/driverStatusTV"
+                        android:text="Waiting for driver's respond"
+                        android:textColor="@color/black"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+
+                </RelativeLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/noteTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Note: Driver is automatically chose based on their queue and route"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:layout_below="@id/statusContainer"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                />
+            <TextView
+                android:id="@+id/noteTV1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No driver means there's no online"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:layout_below="@id/noteTV"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                />
+
+            <Button
+                android:id="@+id/informBtn"
+                android:background="@color/colorPrimary"
+                android:layout_width="200dp"
+                android:layout_marginTop="30dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/noteTV1"
+                android:textColor="@color/white"
+                android:layout_centerHorizontal="true"
+                android:text="INFORM DRIVER" />
+
+            <Button
+                android:id="@+id/contactBtn"
+                android:background="@color/colorPrimary"
+                android:layout_width="200dp"
+                android:layout_marginTop="30dp"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/statusContainer"
+                android:textColor="@color/white"
+                android:layout_centerHorizontal="true"
+                android:text="CONTACT DRIVER" />
+
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+
+
+
+
+</RelativeLayout>

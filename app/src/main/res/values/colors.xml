@@ -17,4 +17,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#43A047</color>
     <color name="color_Red">#F4511E</color>
+
+    <color name="theme_color">#2176FF</color>
+    <color name="theme_color_80">#CC2176FF</color>
+    <color name="theme_color_8">#142176FF</color>
+    <color name="light_8">#14000000</color>
+
+    <color name="fab">#442196F3</color>
 </resources>

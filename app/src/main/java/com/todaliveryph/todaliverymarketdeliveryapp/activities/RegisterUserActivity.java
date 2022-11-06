@@ -26,10 +26,12 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,7 @@ public class RegisterUserActivity extends AppCompatActivity {
     private EditText fullnameET, phoneET, addressET, emailET, passwordET, cpasswordET;
     private Button registerBTN;
     private TextView registerSellerTV;
+    private Spinner spinner;
     private TextView registerRiderTV;
 
     //permission constants
@@ -103,6 +106,14 @@ public class RegisterUserActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
+
+        spinner = findViewById(R.id.routeSpin);
+
+
+        String[] items = new String[]{"STA CRUZ", "SANTIAGO LAUCPAO", "SAN PABLO 1st", "SAN PABLO 2nd",
+                "DELA PAZ", "SAN PEDRO SAUG SANPEDRO PALCARANGAN", "SAN JOSE GUMI","BALANTACAN"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        spinner.setAdapter(adapter);
 
         //when back img click
         backBTN.setOnClickListener(new View.OnClickListener() {
@@ -222,6 +233,7 @@ public class RegisterUserActivity extends AppCompatActivity {
             hashMap.put("name",""+fullName);
             hashMap.put("phone",""+phoneNumber);
             hashMap.put("address",""+address);
+            hashMap.put("zone",spinner.getSelectedItem());
             hashMap.put("timestamp",""+timestamp);
             hashMap.put("accountType","User");
             hashMap.put("online","true");
@@ -278,6 +290,7 @@ public class RegisterUserActivity extends AppCompatActivity {
                                 hashMap.put("email",""+email);
                                 hashMap.put("name",""+fullName);
                                 hashMap.put("phone",""+phoneNumber);
+                                hashMap.put("zone",spinner.getSelectedItem());
                                 hashMap.put("address",""+address);
                                 hashMap.put("timestamp",""+timestamp);
                                 hashMap.put("accountType","User");

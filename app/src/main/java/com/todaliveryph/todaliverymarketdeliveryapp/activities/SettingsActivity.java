@@ -41,7 +41,6 @@ public class SettingsActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
 
 
-
     FirebaseAuth firebaseAuth;
     private boolean isChecked=false;
     SharedPreferences sp;
@@ -155,6 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
                         firebaseAuth.signOut();
                         progressDialog.setMessage("Logging out...");
                         progressDialog.show();
+                        progressDialog.dismiss();
                         checkUser();
                     }
                 }).addOnFailureListener(new OnFailureListener() {

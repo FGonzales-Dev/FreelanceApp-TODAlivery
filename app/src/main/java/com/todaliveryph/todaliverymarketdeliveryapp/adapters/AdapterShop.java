@@ -95,6 +95,8 @@ holder.itemView.setOnClickListener(new View.OnClickListener() {
     public void onClick(View v) {
         Intent intent = new Intent(context, ShopDetailsActivity.class);
         intent.putExtra("shopUid", uid);
+        intent.putExtra("profileImage", profileImage);
+        intent.putExtra("name", shopName);
         context.startActivity(intent);
     }
 });

@@ -44,8 +44,8 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
 
     private ImageButton backBtn ,editBtn;
     private TextView orderIdTv, dateTv, orderStatusTv , nameTv, phoneTv,
-    totalItemsTv, amountTv, addressTv;
-    private Button btnDeclineOrder,btnAcceptOrder;
+    totalItemsTv, amountTv, addressTv,routeTv;
+    private Button btnDeclineOrder,btnAcceptOrder,selectDriver;
     private RecyclerView itemsRv;
     String orderId, orderBy;
     private FirebaseAuth firebaseAuth;
@@ -71,6 +71,8 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         itemsRv = findViewById(R.id.itemsRv);
         btnDeclineOrder = findViewById(R.id.btnDeclineOrder);
         btnAcceptOrder = findViewById(R.id.btnAcceptOrder);
+        selectDriver = findViewById(R.id.selectDriverBtn);
+        routeTv= findViewById(R.id.driverRouteTv);
 
         orderId = getIntent().getStringExtra("orderId");
         orderBy = getIntent().getStringExtra("orderBy");
@@ -81,6 +83,21 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         loadBuyerInfo();
         loadOrderDetails();
         loadOrderedItems();
+
+        selectDriver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(OrderDetailsSellerActivity.this,OrderDriver.class);
+                intent.putExtra("route", routeTv.getText().toString());
+                intent.putExtra("orderID", orderIdTv.getText().toString());
+                intent.putExtra("address", addressTv.getText().toString());
+                intent.putExtra("name", nameTv.getText().toString());
+                intent.putExtra("amount", amountTv.getText().toString());
+                intent.putExtra("items", itemsRv.getChildCount());
+                intent.putExtra("phone", phoneTv.getText().toString());
+                startActivity(intent);
+            }
+        });
 
         btnAcceptOrder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,9 +126,11 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                                 Toast.makeText(OrderDetailsSellerActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
-
+                btnAcceptOrder.setVisibility(View.GONE);
+                selectDriver.setVisibility(View.VISIBLE);
                 //*******************************
             }
+
         });
 
         btnDeclineOrder.setOnClickListener(new View.OnClickListener() {
@@ -246,14 +265,17 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         if (orderStatus.equals("In Progress")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);
+                            selectDriver.setVisibility(View.VISIBLE);
                         } else if(orderStatus.equals("Completed")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.green));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);
                             btnDeclineOrder.setVisibility(View.INVISIBLE);
+                            selectDriver.setVisibility(View.INVISIBLE);
                         } else if(orderStatus.equals("Cancelled")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.color_Red));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);
                             btnDeclineOrder.setVisibility(View.INVISIBLE);
+                            selectDriver.setVisibility(View.INVISIBLE);
                         }
 
                         orderIdTv.setText(orderId);
@@ -279,11 +301,13 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         String name = ""+snapshot.child("name").getValue();
                         String phone = ""+snapshot.child("phone").getValue();
                         String address = ""+snapshot.child("address").getValue();
+                        String route = ""+snapshot.child("zone").getValue();
 
 
                         nameTv.setText(name);
                         phoneTv.setText(phone);
                         addressTv.setText(address);
+                        routeTv.setText(route);
 
                     }
 

@@ -82,12 +82,24 @@
             android:inputType="phone"
             android:padding="10dp" />
 
+        <Spinner
+            android:id="@+id/routeSpin"
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            android:layout_below="@+id/phoneET"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/shape_rec02"
+            android:hint="Zone"
+            android:drawablePadding="5dp"
+            android:layout_marginBottom="5dp"/>
+
 
         <EditText
             android:id="@+id/addressET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/phoneET"
+            android:layout_below="@+id/routeSpin"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
@@ -160,7 +172,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/registerBTN"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="15dp"
             android:layout_marginEnd="5dp"
             android:text="Are you Seller? Register Here"
             android:textColor="@color/colorPrimary"
@@ -172,7 +184,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/registerSellerTV"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="15dp"
             android:layout_marginEnd="5dp"
             android:text="Are you Rider? Register Here"
             android:textColor="@color/colorPrimary"

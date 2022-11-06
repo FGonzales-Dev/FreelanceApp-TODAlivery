@@ -210,6 +210,26 @@
                    android:text="Magallanes Street Quezon City"
                    android:layout_weight="1"/>
            </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Toda Route :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/driverRouteTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Magallanes Street Quezon City"
+                   android:layout_weight="1"/>
+           </TableRow>
 
        </TableLayout>
 
@@ -267,6 +287,20 @@
             app:layout_constraintBottom_toTopOf="@+id/btnDeclineOrder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/selectDriverBtn"
+            android:background="@color/colorPrimary"
+            android:layout_width="250dp"
+            android:layout_marginTop="30dp"
+          android:layout_marginBottom="10dp"
+            android:layout_height="35dp"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/btnDeclineOrder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="SELECT DRIVER" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/receiverLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:orientation="vertical"
+            android:layout_marginEnd="50dp">
+
+            <TextView
+                android:id="@+id/receiverMessage"
+                android:padding="20dp"
+                android:background="@drawable/receiver_msg_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#424242"
+                android:text="Receiver's message"/>
+            <TextView
+                android:id="@+id/receiverMsgTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="5dp"
+                android:textSize="10sp"
+                android:textColor="#424242"
+                android:text="02 - 11 -2022 8:27 AM"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/myLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:orientation="vertical"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:id="@+id/myMessage"
+                android:padding="20dp"
+                android:background="@drawable/my_msg_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:text="Receiver's message"/>
+            <TextView
+                android:id="@+id/myMsgTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:layout_gravity="end"
+                android:layout_marginTop="5dp"
+                android:textSize="10sp"
+                android:textColor="#424242"
+                android:text="02 - 11 -2022 8:27 AM"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -18,13 +18,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
+import com.todaliveryph.todaliverymarketdeliveryapp.RidersOrderMainActivity;
 
 public class MainRiderActivity extends AppCompatActivity {
 
     private TextView nameTV;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
-    CardView clickedBuy, clickedChat, clickedProfile, clickedOrders;
+    CardView clickedQueue, clickedChat, clickedProfile, clickedOrders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +36,11 @@ public class MainRiderActivity extends AppCompatActivity {
 
         //CardViews
         //Menu declaring cardviews
-        clickedBuy =(CardView) findViewById(R.id.clickedUsers);
-        clickedBuy.setOnClickListener(new View.OnClickListener() {
+        clickedQueue =(CardView) findViewById(R.id.clickedQueue);
+        clickedQueue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(MainRiderActivity.this, RiderQueue.class));
 
             }
         });
@@ -60,7 +62,7 @@ public class MainRiderActivity extends AppCompatActivity {
         clickedOrders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(MainRiderActivity.this, RidersOrderMainActivity.class));
             }
         });
 

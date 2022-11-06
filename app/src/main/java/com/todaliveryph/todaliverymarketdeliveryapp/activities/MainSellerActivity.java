@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.todaliveryph.todaliverymarketdeliveryapp.MessagesActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 
 public class MainSellerActivity extends AppCompatActivity {
@@ -54,7 +55,7 @@ public class MainSellerActivity extends AppCompatActivity {
         clickedChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(MainSellerActivity.this, MessagesActivity.class));
             }
         });
         clickedProfile =(CardView) findViewById(R.id.clickedProfile);

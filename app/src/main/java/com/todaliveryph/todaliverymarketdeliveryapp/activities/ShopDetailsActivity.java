@@ -39,9 +39,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
+import com.todaliveryph.todaliverymarketdeliveryapp.MemoryData;
+import com.todaliveryph.todaliverymarketdeliveryapp.MessagesActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import com.todaliveryph.todaliverymarketdeliveryapp.adapters.AdapterCartItem;
 import com.todaliveryph.todaliverymarketdeliveryapp.adapters.AdapterProductUser;
+import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
+import com.todaliveryph.todaliverymarketdeliveryapp.messages.MessagesList;
 import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelCartItem;
 import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelProduct;
 
@@ -56,14 +60,16 @@ import p32929.androideasysql_library.EasyDB;
 
 public class ShopDetailsActivity extends AppCompatActivity {
 
+
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
     //ui views
     private ImageView shopIv;
-    private TextView shopNameTv,phoneTv,emailTv,openCloseTv,deliveryFeeTv,addressTv,filteredProductsTv, cartCountTv;
-    private ImageButton callBtn,backBtn,filterProductsBtn,cartBtn,reviewsBtn;
+    private TextView shopNameTv, phoneTv, emailTv, openCloseTv, deliveryFeeTv, addressTv, filteredProductsTv, cartCountTv;
+    private ImageButton callBtn, backBtn, filterProductsBtn, cartBtn, reviewsBtn;
     private EditText searchProductEt;
     private RatingBar ratingBar;
 
-    private String shopUid;
+    private String shopUid, getShopName, getProfilePic;
     private String shopName, shopEmail, shopPhone, shopAddress;
     public String deliveryFee;
 
@@ -80,6 +86,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Object Handler;
     private EasyDB easyDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +116,9 @@ public class ShopDetailsActivity extends AppCompatActivity {
         progressDialog.setCanceledOnTouchOutside(false);
 
         shopUid = getIntent().getStringExtra("shopUid");
+        getShopName = getIntent().getStringExtra("name");
+        getProfilePic = getIntent().getStringExtra("profileImage");
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         loadMyInfo();
@@ -116,14 +126,14 @@ public class ShopDetailsActivity extends AppCompatActivity {
         loadShopProducts();
         loadReviews();
 
-         easyDB = EasyDB.init(this,"ITEMS_DB_TODA")
+        easyDB = EasyDB.init(this, "ITEMS_DB_TODA")
                 .setTableName("ITEMS_TABLE")
-                .addColumn(new Column("Item_Id", new String[]{"text","unique"}))
-                .addColumn(new Column("Item_PID", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Name", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Price_Each", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_price", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Quantity", new String[]{"text","not null"}))
+                .addColumn(new Column("Item_Id", new String[]{"text", "unique"}))
+                .addColumn(new Column("Item_PID", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Name", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Price_Each", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_price", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Quantity", new String[]{"text", "not null"}))
                 .doneTableColumn();
 
         deleteCartData();
@@ -139,7 +149,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 try {
                     adapterProductUser.getFilter().filter(s);
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -150,60 +160,60 @@ public class ShopDetailsActivity extends AppCompatActivity {
             }
         });
 
-            backBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
-            cartBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showCartDialog();
-                }
-            });
+        cartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCartDialog();
+            }
+        });
 
-            callBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialPhone();
-                }
-            });
+        callBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialPhone();
+            }
+        });
 
-            filterProductsBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        filterProductsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ShopDetailsActivity.this);
-                    builder.setTitle("Filter Products")
-                            .setItems(Constants.productCategories1, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String selected = Constants.productCategories1[which];
-                                    filteredProductsTv.setText(selected);
-                                    if (selected.equals("All")){
-                                        //
-                                        loadShopProducts();
-                                    }else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShopDetailsActivity.this);
+                builder.setTitle("Filter Products")
+                        .setItems(Constants.productCategories1, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String selected = Constants.productCategories1[which];
+                                filteredProductsTv.setText(selected);
+                                if (selected.equals("All")) {
+                                    //
+                                    loadShopProducts();
+                                } else {
 
-                                       // adapterProductUser.getFilter().filter(selected);
-                                        loadFilteredProducts(selected);
-                                    }
+                                    // adapterProductUser.getFilter().filter(selected);
+                                    loadFilteredProducts(selected);
                                 }
-                            }).show();
-                }
+                            }
+                        }).show();
+            }
 
-            });
+        });
 
-            reviewsBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ShopDetailsActivity.this, ShopReviewsActivity.class);
-                    intent.putExtra("shopUid",shopUid);
-                    startActivity(intent);
-                }
-            });
+        reviewsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShopDetailsActivity.this, ShopReviewsActivity.class);
+                intent.putExtra("shopUid", shopUid);
+                startActivity(intent);
+            }
+        });
 
     }// closing on create bundle
 
@@ -211,21 +221,22 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
     private void loadReviews() {
 
-        DatabaseReference ref  = FirebaseDatabase.getInstance().getReference("Users");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(shopUid).child("Ratings")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         ratingSum = 0;
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            float rating = Float.parseFloat(""+ds.child("ratings").getValue());
-                            ratingSum = ratingSum +rating;
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            float rating = Float.parseFloat("" + ds.child("ratings").getValue());
+                            ratingSum = ratingSum + rating;
                         }
                         long numberOfReviews = snapshot.getChildrenCount();
-                        float avgRating = ratingSum/numberOfReviews;
+                        float avgRating = ratingSum / numberOfReviews;
                         ratingBar.setRating(avgRating);
 
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -238,23 +249,23 @@ public class ShopDetailsActivity extends AppCompatActivity {
         easyDB.deleteAllDataFromTable();// delete all records from cart
     }
 
-    public void cartCount(){
+    public void cartCount() {
         //keep in public para accessible sa adapter
         //get cart count
         int count = easyDB.getAllData().getCount();
-        if (count<= 0){
+        if (count <= 0) {
             // no item in cart hide cart countTv
             cartCountTv.setVisibility(View.GONE);
-        }else{
+        } else {
             //with item show item size
             cartCountTv.setVisibility(View.VISIBLE);
-            cartCountTv.setText(""+count); //concatenation
+            cartCountTv.setText("" + count); //concatenation
         }
     }
 
     public double allTotalPrice = 0.00;
-   public double totalHolder = 0.00;
-    public TextView sTotalTv,dFeeTv,allTotalPriceTv;
+    public double totalHolder = 0.00;
+    public TextView sTotalTv, dFeeTv, allTotalPriceTv;
 
     private void showCartDialog() {
         //inflate cart layout
@@ -275,37 +286,37 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
         shopNameTv.setText(shopName);
 
-        EasyDB easyDB = EasyDB.init(this,"ITEMS_DB_TODA")
+        EasyDB easyDB = EasyDB.init(this, "ITEMS_DB_TODA")
                 .setTableName("ITEMS_TABLE")
-                .addColumn(new Column("Item_Id", new String[]{"text","unique"}))
-                .addColumn(new Column("Item_PID", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Name", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Price_Each", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_price", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Quantity", new String[]{"text","not null"}))
+                .addColumn(new Column("Item_Id", new String[]{"text", "unique"}))
+                .addColumn(new Column("Item_PID", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Name", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Price_Each", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_price", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Quantity", new String[]{"text", "not null"}))
                 .doneTableColumn();
 
         //get all records fro, db
 
         Cursor res = easyDB.getAllData();
-        while (res.moveToNext()){
+        while (res.moveToNext()) {
 
             String id = res.getString(1);
             String pId = res.getString(2);
             String name = res.getString(3);
-            String price= res.getString(4);
-            String cost= res.getString(5);
-            String quantity= res.getString(6);
+            String price = res.getString(4);
+            String cost = res.getString(5);
+            String quantity = res.getString(6);
 
-            allTotalPrice = allTotalPrice +Double.parseDouble(cost);
+            allTotalPrice = allTotalPrice + Double.parseDouble(cost);
 
-            ModelCartItem modelCartItem =  new ModelCartItem(
-                    ""+id,
-                    ""+pId,
-                    ""+name,
-                    ""+price,
-                    ""+cost,
-                    ""+quantity
+            ModelCartItem modelCartItem = new ModelCartItem(
+                    "" + id,
+                    "" + pId,
+                    "" + name,
+                    "" + price,
+                    "" + cost,
+                    "" + quantity
             );
 
             cartItemList.add(modelCartItem);
@@ -316,10 +327,10 @@ public class ShopDetailsActivity extends AppCompatActivity {
         //set recycle view
         cartItemsRv.setAdapter(adapterCartItem);
 
-        dFeeTv.setText("₱"+deliveryFee);
-        sTotalTv.setText("₱"+String.format("%.2f",allTotalPrice));
-        totalHolder = allTotalPrice + Double.parseDouble(deliveryFee.replace("₱",""));
-        allTotalPriceTv.setText("₱"+String.format("%.2f",totalHolder));
+        dFeeTv.setText("₱" + deliveryFee);
+        sTotalTv.setText("₱" + String.format("%.2f", allTotalPrice));
+        totalHolder = allTotalPrice + Double.parseDouble(deliveryFee.replace("₱", ""));
+        allTotalPriceTv.setText("₱" + String.format("%.2f", totalHolder));
 
 
         //show dialog
@@ -340,15 +351,15 @@ public class ShopDetailsActivity extends AppCompatActivity {
         checkOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cartItemList.size() == 0){
+                if (cartItemList.size() == 0) {
                     //cart is empty
                     Toast.makeText(ShopDetailsActivity.this, "Cart is Empty, Continue Shopping", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 progressDialog.setTitle("Processing order");
                 progressDialog.show();
-                
-                Handler =  new Handler().postDelayed(new Runnable() {
+
+                Handler = new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
@@ -373,18 +384,18 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
         //get time of order
 
-        String timestamp = ""+System.currentTimeMillis();
-        String cost = allTotalPriceTv.getText().toString().trim().replace("₱","");
+        String timestamp = "" + System.currentTimeMillis();
+        String cost = allTotalPriceTv.getText().toString().trim().replace("₱", "");
 
         //Setup Order Data
 
-        HashMap<String,String> hashMap = new HashMap<>();
-        hashMap.put("orderId",""+timestamp);
-        hashMap.put("orderTime",""+timestamp);
-        hashMap.put("orderStatus","Pending");
-        hashMap.put("orderCost",""+cost);
-        hashMap.put("orderBy",""+firebaseAuth.getUid());
-        hashMap.put("orderTo",""+shopUid);
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("orderId", "" + timestamp);
+        hashMap.put("orderTime", "" + timestamp);
+        hashMap.put("orderStatus", "Pending");
+        hashMap.put("orderCost", "" + cost);
+        hashMap.put("orderBy", "" + firebaseAuth.getUid());
+        hashMap.put("orderTo", "" + shopUid);
 
 
         //add to database
@@ -394,7 +405,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void unused) {
 
-                        for (int i=0; i<cartItemList.size(); i++){
+                        for (int i = 0; i < cartItemList.size(); i++) {
                             String pId = cartItemList.get(i).getId();
                             String id = cartItemList.get(i).getId();
                             String cost = cartItemList.get(i).getCost();
@@ -402,7 +413,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                             String price = cartItemList.get(i).getPrice();
                             String quantity = cartItemList.get(i).getQuantity();
 
-                            HashMap<String,String> hashMap1 = new HashMap<>();
+                            HashMap<String, String> hashMap1 = new HashMap<>();
 
                             hashMap1.put("pID", pId);
                             hashMap1.put("name", name);
@@ -425,7 +436,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(ShopDetailsActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ShopDetailsActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -445,11 +456,11 @@ public class ShopDetailsActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //before getting reset list
                         productsList.clear();
-                        for(DataSnapshot ds:snapshot.getChildren()){
+                        for (DataSnapshot ds : snapshot.getChildren()) {
 
-                            String productCategory =""+ds.child("productCategory").getValue();
+                            String productCategory = "" + ds.child("productCategory").getValue();
 
-                            if (selected.equals(productCategory)){
+                            if (selected.equals(productCategory)) {
                                 ModelProduct modelProduct = ds.getValue(ModelProduct.class);
                                 productsList.add(modelProduct);
                             }
@@ -459,6 +470,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                         //set adapter
                         productsRv.setAdapter(adapterProductUser);
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -468,8 +480,69 @@ public class ShopDetailsActivity extends AppCompatActivity {
     }
 
     private void dialPhone() {
-        startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+Uri.encode(shopPhone))));
-        Toast.makeText(this, ""+shopPhone, Toast.LENGTH_SHORT).show();
+        databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+
+                    for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
+
+                        if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
+
+                            final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
+                            final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
+
+                            if (getUserOne.equals(shopUid) || getUserTwo.equals(shopUid)) {
+                                final String getKey = dataSnapshot1.getKey();
+
+                                Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
+
+                                intent.putExtra("mobile", shopUid);
+                                intent.putExtra("name", getShopName);
+                                intent.putExtra("profileImage", getProfilePic);
+                                intent.putExtra("chat_key", getKey);
+
+                                startActivity(intent);
+                            }
+                            else{
+                                Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
+
+                                intent.putExtra("mobile", shopUid);
+                                intent.putExtra("name", getShopName);
+                                intent.putExtra("profileImage", getProfilePic);
+                                intent.putExtra("chat_key", "");
+
+                                startActivity(intent);
+                            }
+
+
+                        }
+
+                    }
+
+                if (!snapshot1.hasChildren()) {
+                    Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
+
+                    intent.putExtra("mobile", shopUid);
+                    intent.putExtra("name", getShopName);
+                    intent.putExtra("profileImage", getProfilePic);
+                    intent.putExtra("chat_key", "");
+
+                    startActivity(intent);
+                }
+
+
+
+
+
+                }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void loadMyInfo() {
@@ -479,10 +552,11 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
+                        for (DataSnapshot ds : snapshot.getChildren()) {
 
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -498,31 +572,31 @@ public class ShopDetailsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 //Get Shop Data
-                String name =""+snapshot.child("name").getValue();
-                shopName=""+snapshot.child("shopName").getValue();
-                shopEmail=""+snapshot.child("email").getValue();
-                shopPhone=""+snapshot.child("phone").getValue();
-                shopAddress =""+snapshot.child("address").getValue();
-                deliveryFee=""+snapshot.child("deliveryFee").getValue();
-                String profileImage=""+snapshot.child("profileImage").getValue();
-                String shopOpen=""+snapshot.child("shopOpen").getValue();
+                String name = "" + snapshot.child("name").getValue();
+                shopName = "" + snapshot.child("shopName").getValue();
+                shopEmail = "" + snapshot.child("email").getValue();
+                shopPhone = "" + snapshot.child("phone").getValue();
+                shopAddress = "" + snapshot.child("address").getValue();
+                deliveryFee = "" + snapshot.child("deliveryFee").getValue();
+                String profileImage = "" + snapshot.child("profileImage").getValue();
+                String shopOpen = "" + snapshot.child("shopOpen").getValue();
 
 
                 //set Data
 
                 shopNameTv.setText(shopName);
                 emailTv.setText(shopEmail);
-                deliveryFeeTv.setText("Service Fee: ₱ "+deliveryFee);
+                deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
                 addressTv.setText(shopAddress);
                 phoneTv.setText(shopPhone);
-                if (shopOpen.equals("true")){
+                if (shopOpen.equals("true")) {
                     openCloseTv.setText("Yes We're Open");
-                }else {
+                } else {
                     openCloseTv.setText("Sorry We're Close");
                 }
                 try {
                     Picasso.get().load(profileImage).into(shopIv);
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -543,7 +617,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         productsList.clear();
-                        for (DataSnapshot ds: snapshot.getChildren()){
+                        for (DataSnapshot ds : snapshot.getChildren()) {
                             ModelProduct modelProduct = ds.getValue(ModelProduct.class);
                             productsList.add(modelProduct);
                         }
@@ -561,13 +635,13 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void prepareNotificationMessage(String orderId){
+    private void prepareNotificationMessage(String orderId) {
         //when user placed order, send notif to seller
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="New Order "+ orderId;
+        String NOTIFICATION_TITLE = "New Order " + orderId;
         String NOTIFICATION_MESSAGE = "You have received a new order!";
         String NOTIFICATION_TYPE = "NewOrder";
 
@@ -575,20 +649,21 @@ public class ShopDetailsActivity extends AppCompatActivity {
         JSONObject notificationBodyJo = new JSONObject();
         try {
             // mga sinesend
-            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
-            notificationBodyJo.put("buyerUid",firebaseAuth.getUid()); // para ung buyer id is recognized as buyer ah yeah
-            notificationBodyJo.put("sellerUid",shopUid);
-            notificationBodyJo.put("orderId",orderId);
-            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("buyerUid", firebaseAuth.getUid()); // para ung buyer id is recognized as buyer ah yeah
+            notificationBodyJo.put("sellerUid", shopUid);
+            notificationBodyJo.put("orderId", orderId);
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage", NOTIFICATION_MESSAGE);
             //saan i sesend
-            notificationJo.put("to",NOTIFICATION_TOPIC);
-            notificationJo.put("data",notificationBodyJo);
-        }catch (Exception e){
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo, orderId);
     }
+
     private void sendFcmNotification(JSONObject notificationJo, String orderId) {
 
         //send volley request (dependencies)
@@ -599,8 +674,8 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 //after send fcm start order details activity
                 //open order page to see details:
                 Intent intent = new Intent(ShopDetailsActivity.this, OrderDetailsUsersActivity.class);
-                intent.putExtra("orderTo",shopUid);
-                intent.putExtra("orderId",orderId);
+                intent.putExtra("orderTo", shopUid);
+                intent.putExtra("orderId", orderId);
                 finish();
                 startActivity(intent);
             }
@@ -609,19 +684,19 @@ public class ShopDetailsActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // if failed, still start order activity
                 Intent intent = new Intent(ShopDetailsActivity.this, OrderDetailsUsersActivity.class);
-                intent.putExtra("orderTo",shopUid);
-                intent.putExtra("orderId",orderId);
+                intent.putExtra("orderTo", shopUid);
+                intent.putExtra("orderId", orderId);
                 finish();
                 startActivity(intent);
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 //put required headers
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type","application/json");
-                headers.put("Authorization","key="+Constants.FCM_KEY);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key=" + Constants.FCM_KEY);
                 return headers;
             }
         };

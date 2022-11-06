@@ -8,6 +8,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.todaliveryph.todaliverymarketdeliveryapp.MessagesActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 
 public class MainUserActivity extends AppCompatActivity {
@@ -33,19 +36,22 @@ public class MainUserActivity extends AppCompatActivity {
 
 
 
+
+
         //CardViews
         //Menu declaring cardviews
-        clickedBuy =(CardView) findViewById(R.id.clickedUsers);
+        clickedBuy =(CardView) findViewById(R.id.clickedBuyNow);
         clickedBuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainUserActivity.this, UserShopsMainActivity.class));
             }
         });
-        clickedChat =(CardView) findViewById(R.id.clickedRiders);
+        clickedChat =(CardView) findViewById(R.id.clickedChats);
         clickedChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(MainUserActivity.this, MessagesActivity.class));
 
             }
         });
