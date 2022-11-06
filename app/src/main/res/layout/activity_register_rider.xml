@@ -153,7 +153,6 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginHorizontal="15dp"
                 android:background="@drawable/shape_rec02"
-
                 android:drawablePadding="5dp"
                 android:layout_marginBottom="5dp"/>
 

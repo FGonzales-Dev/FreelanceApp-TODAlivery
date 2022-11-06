@@ -129,10 +129,10 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
         spinner = findViewById(R.id.spinner);
 
 
-
-
         String[] items = new String[]{"STA CRUZ TODA", "SANTIAGO LAUCPAO TODA", "SAN PABLO 1st TODA", "SAN PABLO 2nd TODA",
                 "DELA PAZ TODA", "SAN PEDRO SAUG SANPEDRO PALCARANGAN TODA", "SAN JOSE GUMI TODA","BALANTACAN TODA"};
+
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         spinner.setAdapter(adapter);
 
@@ -187,8 +187,35 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
                                         if (otpFromDb.equals(otpET.getText().toString())){
 
                                             Toast.makeText(RegisterRiderActivity.this,"You are verified", Toast.LENGTH_SHORT).show();
+
                                             startActivity(new Intent(RegisterRiderActivity.this, MainRiderActivity.class));
                                             finish();
+
+
+                                            HashMap<String, Object> hashMap = new HashMap<>();
+
+                                            hashMap.put("isNumberVerified","true");
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+                                            ref.child(firebaseAuth.getUid()).updateChildren(hashMap)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            // db updated
+                                                            startActivity(new Intent(RegisterRiderActivity.this, MainRiderActivity.class));
+                                                            finish();
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            //db failed to update
+                                                            progressDialog.dismiss();
+                                                            startActivity(new Intent(RegisterRiderActivity.this, MainRiderActivity.class));
+                                                            finish();
+                                                            Toast.makeText(RegisterRiderActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+
+
                                             progressDialog.dismiss();
                                         }else {
                                             Toast.makeText(RegisterRiderActivity.this,"Otp is not match", Toast.LENGTH_SHORT).show();
@@ -325,7 +352,9 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
             hashMap.put("phone",""+phoneNumber);
             hashMap.put("otp",otp);
             hashMap.put("address",""+address);
+
             hashMap.put("queue","");
+
             hashMap.put("Toda",spinner.getSelectedItem());
             // hashMap.put("latitude",""+latitude);
             // hashMap.put("longitude",""+longitude);
