@@ -34,8 +34,8 @@ import java.util.HashMap;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    RelativeLayout RlViewProfile, RlsignOut;
-    TextView notificationStatusTv;
+    RelativeLayout RlViewProfile, RlsignOut,RlVerification;
+    TextView notificationStatusTv,phoneVerifyDetails;
     ImageButton backBTN;
     SwitchCompat fcmSwitch;
     ProgressDialog progressDialog;
@@ -54,7 +54,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        phoneVerifyDetails= findViewById(R.id.phoneVerifyDetails);
+        RlVerification= findViewById(R.id.RlVerification);
         RlViewProfile = findViewById(R.id.RlViewProfile);
         RlsignOut = findViewById(R.id.RlsignOut);
         backBTN = findViewById(R.id.backBTN);
@@ -67,6 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         checkUser();
+        checkRider();
 
         sp = getSharedPreferences("SETTINGS_SP",MODE_PRIVATE);
         isChecked = sp.getBoolean("FCM_ENABLED",false);
@@ -84,6 +86,16 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 checkAccountType();
                 checkUserType();
+            }
+        });
+
+        RlVerification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(SettingsActivity.this, RiderPhoneVerificationActivity.class));
+                finish();
+
             }
         });
 
@@ -216,7 +228,38 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    private void checkUserType() {
+    private void checkRider() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+        ref.orderByChild("uid").equalTo(firebaseAuth.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot ds: snapshot.getChildren()){
+                            String accountType =""+ds.child("accountType").getValue();
+                            String isNumberVerified =""+ds.child("isNumberVerified").getValue();
+                            if (accountType.equals("Rider")){
+                                RlVerification.setVisibility(View.VISIBLE);
+                                if (isNumberVerified.equals("true")) {
+                                    phoneVerifyDetails.setText("VERIFIED");
+                                    RlVerification.setClickable(false);
+
+                                } else {
+                                    phoneVerifyDetails.setText("NOY YET VERIFIED");
+                                    RlVerification.setClickable(true);
+                                }
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });}
+
+
+        private void checkUserType() {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.orderByChild("uid").equalTo(firebaseAuth.getUid())
