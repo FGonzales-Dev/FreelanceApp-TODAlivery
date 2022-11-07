@@ -161,7 +161,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
                             final String getKey = dataSnapshot1.getKey();
 
                             Intent intent = new Intent(OrderDetailsRidersActivity.this, Chat.class);
-
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", getCustomerId);
                             intent.putExtra("name", getCustomerName);
                             intent.putExtra("profileImage", "");
@@ -170,7 +170,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else{
                             Intent intent = new Intent(OrderDetailsRidersActivity.this, Chat.class);
-
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", getCustomerId);
                             intent.putExtra("name", getCustomerName);
                             intent.putExtra("profileImage", "");

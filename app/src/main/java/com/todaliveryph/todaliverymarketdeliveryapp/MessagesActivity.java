@@ -67,7 +67,6 @@ public class MessagesActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading Info...");
         progressDialog.show();
 
-
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

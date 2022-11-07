@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ public class RiderDeliver extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
+    ImageView imgNoOrder;
     Button acceptBtn, declineBtn,messageSellerBtn;
 
     @Override
@@ -48,13 +50,14 @@ public class RiderDeliver extends AppCompatActivity {
         status = findViewById(R.id.statusTV);
         buyerRoute = findViewById(R.id.buyerRouteTV);
         shopIDTV= findViewById(R.id.shopIDTV);
+        imgNoOrder = findViewById(R.id.noOrderImg);
 
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
         messageSellerBtn = findViewById(R.id.contactSellerBtn);
 
         loadDelivery();
-
+        showControls();
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -231,9 +234,11 @@ public class RiderDeliver extends AppCompatActivity {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                     databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).child("status").setValue("Rider Accepted");
+                                    databaseReference.child("Users").child(shopIDTV.getText().toString()).child("Orders").child(orderID.getText().toString()).child("status").setValue("Rider Accepted");
                                     databaseReference.child("Users").child(user).child("riderAccepted").setValue("true");
                                     databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("onQueue").setValue("");
+                                    databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
                                 }
 
                                 @Override
@@ -278,10 +283,22 @@ public class RiderDeliver extends AppCompatActivity {
         });
     }
     private void showControls(){
-        if (!(status.getText().toString().equals("Please respond to this order"))){
+        if ((status.getText().toString().equals("Please respond to this order"))){
+            messageSellerBtn.setVisibility(View.GONE);
+            acceptBtn.setVisibility(View.VISIBLE);
+            declineBtn.setVisibility(View.VISIBLE);
+        }
+        else if(status.getText().toString().equals("You can now proceed to deliver the products")){
             messageSellerBtn.setVisibility(View.VISIBLE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
+            imgNoOrder.setVisibility(View.GONE);
+        }
+        else {
+            messageSellerBtn.setVisibility(View.GONE);
+            acceptBtn.setVisibility(View.GONE);
+            declineBtn.setVisibility(View.GONE);
+            imgNoOrder.setVisibility(View.VISIBLE);
         }
 
 
@@ -304,7 +321,7 @@ public class RiderDeliver extends AppCompatActivity {
                             final String getKey = dataSnapshot1.getKey();
 
                             Intent intent = new Intent(RiderDeliver.this, Chat.class);
-
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", shopIDTV.getText().toString());
                             intent.putExtra("name", sellerName.getText().toString());
                             intent.putExtra("chat_key", getKey);
@@ -312,14 +329,14 @@ public class RiderDeliver extends AppCompatActivity {
                             startActivity(intent);
                         }
 
-
                     }
                     else{
                         Intent intent = new Intent(RiderDeliver.this, Chat.class);
-
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("mobile", shopIDTV.getText().toString());
                         intent.putExtra("name", sellerName.getText().toString());
                         intent.putExtra("chat_key", "");
+
 
                         startActivity(intent);
                     }

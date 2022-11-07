@@ -120,6 +120,11 @@ public class RiderQueue extends AppCompatActivity {
                                 timeTV.setText(getQueue);
                                 onlineBtn.setText("CURRENTLY ON QUEUE");
                             }
+                            else{
+                                onlineBtn.setBackgroundResource(R.color.colorPrimary);
+                                timeTV.setText("");
+                                onlineBtn.setText("MAKE ME ONLINE");
+                            }
 
                         }
                     }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
+import com.todaliveryph.todaliverymarketdeliveryapp.MessagesActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
 
@@ -42,7 +43,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         MessagesList list2 = messagesLists.get(position);
-
         try{
             Picasso.get().load(list2.getProfilePic()).into(holder.profilePic);
         }catch (Exception e){
@@ -67,13 +67,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
             public void onClick(View view) {
 
                 Intent intent = new Intent(context, Chat.class);
-
                 intent.putExtra("mobile",list2.getMobile());
                 intent.putExtra("name", list2.getName());
                 intent.putExtra("profileImage", list2.getProfilePic());
                 intent.putExtra("chat_key", list2.getChatKey());
 
                 context.startActivity(intent);
+
             }
         });
 

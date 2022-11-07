@@ -3,8 +3,10 @@ package com.todaliveryph.todaliverymarketdeliveryapp.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -497,7 +499,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                             final String getKey = dataSnapshot1.getKey();
 
                             Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
-
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", shopUid);
                             intent.putExtra("name", getShopName);
                             intent.putExtra("profileImage", getProfilePic);
@@ -507,7 +509,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                         }
                         else {
                             Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
-
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", shopUid);
                             intent.putExtra("name", getShopName);
                             intent.putExtra("profileImage", getProfilePic);

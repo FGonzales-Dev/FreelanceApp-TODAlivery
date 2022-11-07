@@ -1,5 +1,8 @@
 package com.todaliveryph.todaliverymarketdeliveryapp.chats;
 
+import android.app.Application;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.todaliveryph.todaliverymarketdeliveryapp.MemoryData;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderDeliver;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -44,12 +49,10 @@ public class Chat extends AppCompatActivity {
     private RecyclerView chattingRecyclerView;
     private ChatAdapter chatAdapter;
     private boolean loadingFirstTime = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
         firebaseAuth = FirebaseAuth.getInstance();
 
         final ImageView backBtn = findViewById(R.id.backBtn);
@@ -163,8 +166,12 @@ public class Chat extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                onBackPressed ();
             }
         });
+    }
+
+    public void onBackPressed () {
+        finish();
     }
 }
