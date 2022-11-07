@@ -59,28 +59,36 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
         String customerId = modelOrderDriver.getCustomerId();
         //get shop info
      //  loadShopInfo(modelOrderDriver, holder);
-        holder.shopNameTv.setText(customerName);
-        holder.amountTv.setText("Amount: "+itemsAmount);
-        holder.statusTv.setText(status);
-        holder.orderIdTv.setText("Order ID: "+orderId);
+
 
 
         //change color of status depends on its status
-        if (status.equals("Pending")){
-            holder.statusTv.setTextColor(context.getResources().getColor(R.color.colorPrimary));
-        } else if(status.equals("Completed")){
-            holder.statusTv.setTextColor(context.getResources().getColor(R.color.green));
-        } else if(status.equals("Cancelled")){
-            holder.statusTv.setTextColor(context.getResources().getColor(R.color.color_Red));
+        try {
+            holder.shopNameTv.setText(customerName);
+            holder.amountTv.setText("Amount: "+itemsAmount);
+            holder.statusTv.setText(status);
+            holder.orderIdTv.setText("Order ID: "+orderId);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.parseLong(date));
+            String formatedDate = DateFormat.format("dd/MM/yyyy",calendar).toString();
+
+            holder.dateTv.setText(formatedDate);
+            if (status.equals("Pending")){
+                holder.statusTv.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            } else if(status.equals("Completed")){
+                holder.statusTv.setTextColor(context.getResources().getColor(R.color.green));
+            } else if(status.equals("Cancelled")){
+                holder.statusTv.setTextColor(context.getResources().getColor(R.color.color_Red));
+            }
+        }catch (Exception e){
+
         }
+
+
 
         //covert timestamp to date format
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(Long.parseLong(date));
-        String formatedDate = DateFormat.format("dd/MM/yyyy",calendar).toString();
 
-        holder.dateTv.setText(formatedDate);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
