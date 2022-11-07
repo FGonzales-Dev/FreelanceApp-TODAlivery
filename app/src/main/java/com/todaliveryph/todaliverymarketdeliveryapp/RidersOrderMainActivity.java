@@ -34,7 +34,7 @@ public class RidersOrderMainActivity extends AppCompatActivity {
     private RecyclerView ordersRv;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
-
+    String user;
     private ArrayList<ModelOrderDriver> ordersList;
     private AdapterOrderDriver adapterOrderDriver;
     @Override
@@ -49,7 +49,7 @@ public class RidersOrderMainActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
-
+        user = firebaseAuth.getInstance().getUid();
         checkUser();
 
         BTNback.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +100,7 @@ public class RidersOrderMainActivity extends AppCompatActivity {
                 for (DataSnapshot ds: snapshot.getChildren()){
                     String uid =""+ds.getRef().getKey();
 
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverOrder").child(uid).child("orders") ;
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverOrder").child(user).child("orders") ;
                     ref.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
