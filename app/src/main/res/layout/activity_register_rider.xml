@@ -76,7 +76,7 @@
                 android:layout_below="@+id/fullnameET"
                 android:layout_marginTop="5dp"
                 android:layout_marginHorizontal="15dp"
-                android:text="+639"
+
                 android:layout_marginBottom="5dp"
                 android:background="@drawable/shape_rec02"
                 android:drawableStart="@drawable/phone"
