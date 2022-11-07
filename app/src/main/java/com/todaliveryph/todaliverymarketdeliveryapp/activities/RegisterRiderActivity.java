@@ -129,10 +129,8 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
         spinner = findViewById(R.id.spinner);
 
 
-        String[] items = new String[]{"STA CRUZ TODA", "SANTIAGO LAUCPAO TODA", "SAN PABLO 1st TODA", "SAN PABLO 2nd TODA",
-                "DELA PAZ TODA", "SAN PEDRO SAUG SANPEDRO PALCARANGAN TODA", "SAN JOSE GUMI TODA","BALANTACAN TODA"};
-
-
+        String[] items = new String[]{"STA CRUZ", "SANTIAGO LAUCPAO", "SAN PABLO 1st", "SAN PABLO 2nd",
+                "DELA PAZ", "SAN PEDRO SAUG SANPEDRO PALCARANGAN", "SAN JOSE GUMI","BALANTACAN"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         spinner.setAdapter(adapter);
 
