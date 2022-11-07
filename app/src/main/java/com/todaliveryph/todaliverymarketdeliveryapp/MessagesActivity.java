@@ -74,8 +74,10 @@ public class MessagesActivity extends AppCompatActivity {
 
                 final String profilePicUrl = snapshot.child("Users").child(firebaseAuth.getUid()).child("profileImage").getValue(String.class);
 
-                if (!profilePicUrl.isEmpty()) {
+                try{
                     Picasso.get().load(profilePicUrl).into(usersProfilePic);
+                }catch (Exception e){
+                    usersProfilePic.setImageResource(R.drawable.user_icon);
                 }
 
 
