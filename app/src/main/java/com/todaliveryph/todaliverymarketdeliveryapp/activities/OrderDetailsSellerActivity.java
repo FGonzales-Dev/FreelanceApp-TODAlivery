@@ -43,7 +43,7 @@ import java.util.Map;
 public class OrderDetailsSellerActivity extends AppCompatActivity {
 
     private ImageButton backBtn ,editBtn;
-    private TextView orderIdTv, dateTv, orderStatusTv , nameTv, phoneTv,
+    private TextView orderIdTv, dateTv, orderStatusTv , nameTv, phoneTv,buyerIdTv,
     totalItemsTv, amountTv, addressTv,routeTv;
     private Button btnDeclineOrder,btnAcceptOrder,selectDriver;
     private RecyclerView itemsRv;
@@ -73,6 +73,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         btnAcceptOrder = findViewById(R.id.btnAcceptOrder);
         selectDriver = findViewById(R.id.selectDriverBtn);
         routeTv= findViewById(R.id.driverRouteTv);
+        buyerIdTv = findViewById(R.id.buyerIDTv);
 
         orderId = getIntent().getStringExtra("orderId");
         orderBy = getIntent().getStringExtra("orderBy");
@@ -92,6 +93,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                 intent.putExtra("orderID", orderIdTv.getText().toString());
                 intent.putExtra("address", addressTv.getText().toString());
                 intent.putExtra("name", nameTv.getText().toString());
+                intent.putExtra("buyerID", buyerIdTv.getText().toString());
                 intent.putExtra("amount", amountTv.getText().toString());
                 intent.putExtra("items", itemsRv.getChildCount());
                 intent.putExtra("phone", phoneTv.getText().toString());
@@ -261,7 +263,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(Long.parseLong(orderTime));
                         String dateFormated = DateFormat.format("dd/MM/yyyy",calendar).toString();
-
+                        buyerIdTv.setText(orderBy);
                         if (orderStatus.equals("In Progress")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);

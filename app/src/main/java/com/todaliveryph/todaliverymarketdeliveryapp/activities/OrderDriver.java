@@ -24,7 +24,7 @@ public class OrderDriver extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
     FirebaseAuth firebaseAuth;
-    String getRoute,getOrderID,getCustomerName,getOrderAmount,getCustomerAddress,getOrderItem,getCustomerPhone;
+    String getRoute,getOrderID,getCustomerName,getOrderAmount,getCustomerAddress,getCustomerID,getCustomerPhone;
     TextView driverName, driverNumber, driverStatus, driverRoute,driverStatusNote,driverID;
     Button informBtn;
     @Override
@@ -40,6 +40,7 @@ public class OrderDriver extends AppCompatActivity {
         getCustomerAddress= getIntent().getStringExtra("address");
         getCustomerPhone= getIntent().getStringExtra("phone");
         getOrderAmount= getIntent().getStringExtra("amount");
+        getCustomerID= getIntent().getStringExtra("buyerID");
 
         driverName = findViewById(R.id.driverNameTV);
         driverNumber = findViewById(R.id.driverNumberTV);
@@ -71,7 +72,7 @@ public class OrderDriver extends AppCompatActivity {
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("status").setValue("Pending");
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("route").setValue(getRoute);
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderTime").setValue(getOrderID);
-
+                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerId").setValue(getCustomerID);
             }
         });
 

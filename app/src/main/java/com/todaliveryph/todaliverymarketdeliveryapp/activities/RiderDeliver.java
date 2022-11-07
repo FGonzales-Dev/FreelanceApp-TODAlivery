@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,13 +20,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
+import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
 
 public class RiderDeliver extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
     FirebaseAuth firebaseAuth;
-    TextView sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
+    TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
-    Button acceptBtn, declineBtn,scanQrBtn;
+    Button acceptBtn, declineBtn,messageSellerBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +47,11 @@ public class RiderDeliver extends AppCompatActivity {
         amount = findViewById(R.id.amountTV);
         status = findViewById(R.id.statusTV);
         buyerRoute = findViewById(R.id.buyerRouteTV);
+        shopIDTV= findViewById(R.id.shopIDTV);
 
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
+        messageSellerBtn = findViewById(R.id.contactSellerBtn);
 
         loadDelivery();
 
@@ -61,9 +65,14 @@ public class RiderDeliver extends AppCompatActivity {
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
+
                         acceptOrder();
-                        //    Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
                         removeFromQueue();
+                        messageSellerBtn.setVisibility(View.VISIBLE);
+                        acceptBtn.setVisibility(View.GONE);
+                        declineBtn.setVisibility(View.GONE);
+
                     }
                 });
 
@@ -107,6 +116,12 @@ public class RiderDeliver extends AppCompatActivity {
             }
         });
 
+        messageSellerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialPhone();
+            }
+        });
 
     }
 
@@ -184,6 +199,7 @@ public class RiderDeliver extends AppCompatActivity {
                     String getShopPhone = snapshot.child(shopID).child("phone").getValue(String.class);
                     String getDriverName = snapshot.child(user).child("name").getValue(String.class);
 
+                    shopIDTV.setText(shopID);
                     sellerName.setText(getShopName);
                     sellerAddress.setText(getShopAddress);
                     sellerPhone.setText(getShopPhone);
@@ -263,12 +279,75 @@ public class RiderDeliver extends AppCompatActivity {
     }
     private void showControls(){
         if (!(status.getText().toString().equals("Please respond to this order"))){
+            messageSellerBtn.setVisibility(View.VISIBLE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
         }
-        else{
-            scanQrBtn.setVisibility(View.VISIBLE);
-        }
+
+
+    }
+
+    private void dialPhone() {
+        databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+
+                for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
+
+                    if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
+
+                        final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
+                        final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
+
+                        if ((getUserOne.equals(shopIDTV.getText().toString()) || getUserTwo.equals(shopIDTV.getText().toString()))
+                                && (getUserOne.equals(user) || getUserTwo.equals(user))) {
+                            final String getKey = dataSnapshot1.getKey();
+
+                            Intent intent = new Intent(RiderDeliver.this, Chat.class);
+
+                            intent.putExtra("mobile", shopIDTV.getText().toString());
+                            intent.putExtra("name", sellerName.getText().toString());
+                            intent.putExtra("chat_key", getKey);
+
+                            startActivity(intent);
+                        }
+
+
+                    }
+                    else{
+                        Intent intent = new Intent(RiderDeliver.this, Chat.class);
+
+                        intent.putExtra("mobile", shopIDTV.getText().toString());
+                        intent.putExtra("name", sellerName.getText().toString());
+                        intent.putExtra("chat_key", "");
+
+                        startActivity(intent);
+                    }
+
+                }
+
+                if (!snapshot1.hasChildren()) {
+                    Intent intent = new Intent(RiderDeliver.this, Chat.class);
+
+                    intent.putExtra("mobile", shopIDTV.getText().toString());
+                    intent.putExtra("name", sellerName.getText().toString());
+                    intent.putExtra("chat_key", "");
+
+                    startActivity(intent);
+                }
+
+
+
+
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 }

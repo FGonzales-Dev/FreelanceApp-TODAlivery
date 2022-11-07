@@ -117,6 +117,26 @@
                    android:layout_marginTop="5dp"
                    android:layout_marginEnd="5dp"
                    android:textColor="@color/black"
+                   android:text="Customer ID:"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/buyerIDTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Juan Ponce Enrile"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
                    android:text="Customer Name :"
                    android:textStyle="bold"/>
 

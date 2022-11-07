@@ -56,6 +56,7 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
         String shopId = modelOrderDriver.getShopId();
         String date = modelOrderDriver.getOrderTime();
         String status = modelOrderDriver.getStatus();
+        String customerId = modelOrderDriver.getCustomerId();
         //get shop info
      //  loadShopInfo(modelOrderDriver, holder);
         holder.shopNameTv.setText(customerName);
@@ -94,6 +95,7 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
                 intent.putExtra("date",date);
                 intent.putExtra("status",status);
                 intent.putExtra("amount",itemsAmount);
+                intent.putExtra("buyerId",customerId);
 
                 context.startActivity(intent);
             }

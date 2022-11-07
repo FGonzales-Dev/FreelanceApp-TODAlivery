@@ -70,8 +70,11 @@ public class Chat extends AppCompatActivity {
         getUserMobile = FirebaseAuth.getInstance().getUid();
         nameTV.setText(getName);
 
-        if(!getProfilePic.isEmpty()) {
+
+        try{
             Picasso.get().load(getProfilePic).into(profilePic);
+        }catch (Exception e){
+           profilePic.setImageResource(R.drawable.user_icon);
         }
 
         chattingRecyclerView.setHasFixedSize(true);

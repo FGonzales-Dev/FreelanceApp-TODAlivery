@@ -43,8 +43,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
 
         MessagesList list2 = messagesLists.get(position);
 
-        if(!list2.getProfilePic().isEmpty()){
-                Picasso.get().load(list2.getProfilePic()).into(holder.profilePic);
+        try{
+            Picasso.get().load(list2.getProfilePic()).into(holder.profilePic);
+        }catch (Exception e){
+            holder.profilePic.setImageResource(R.drawable.user_icon);
         }
 
         holder.name.setText(list2.getName());

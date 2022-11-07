@@ -86,6 +86,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Object Handler;
     private EasyDB easyDB;
+    String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +121,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
         getProfilePic = getIntent().getStringExtra("profileImage");
 
         firebaseAuth = FirebaseAuth.getInstance();
-
+        user = firebaseAuth.getInstance().getUid();
         loadMyInfo();
         loadShopDetails();
         loadShopProducts();
@@ -484,40 +485,42 @@ public class ShopDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
 
-                    for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
+                for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
 
-                        if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
+                    if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
 
-                            final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
-                            final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
+                        final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
+                        final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
 
-                            if (getUserOne.equals(shopUid) || getUserTwo.equals(shopUid)) {
-                                final String getKey = dataSnapshot1.getKey();
+                        if ((getUserOne.equals(shopUid) || getUserTwo.equals(shopUid))
+                                && (getUserOne.equals(user) || getUserTwo.equals(user))) {
+                            final String getKey = dataSnapshot1.getKey();
 
-                                Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
+                            Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
 
-                                intent.putExtra("mobile", shopUid);
-                                intent.putExtra("name", getShopName);
-                                intent.putExtra("profileImage", getProfilePic);
-                                intent.putExtra("chat_key", getKey);
+                            intent.putExtra("mobile", shopUid);
+                            intent.putExtra("name", getShopName);
+                            intent.putExtra("profileImage", getProfilePic);
+                            intent.putExtra("chat_key", getKey);
 
-                                startActivity(intent);
-                            }
-                            else{
-                                Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
+                            startActivity(intent);
+                        }
+                        else {
+                            Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
 
-                                intent.putExtra("mobile", shopUid);
-                                intent.putExtra("name", getShopName);
-                                intent.putExtra("profileImage", getProfilePic);
-                                intent.putExtra("chat_key", "");
+                            intent.putExtra("mobile", shopUid);
+                            intent.putExtra("name", getShopName);
+                            intent.putExtra("profileImage", getProfilePic);
+                            intent.putExtra("chat_key", "");
 
-                                startActivity(intent);
-                            }
-
-
+                            startActivity(intent);
                         }
 
+
                     }
+
+
+                }
 
                 if (!snapshot1.hasChildren()) {
                     Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
@@ -531,10 +534,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 }
 
 
-
-
-
-                }
+            }
 
 
             @Override

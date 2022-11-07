@@ -2,13 +2,13 @@ package com.todaliveryph.todaliverymarketdeliveryapp.models;
 
 public class ModelOrderDriver {
 
-    String customerAddress,customerName,customerPhone,itemsAmount,orderId,shopId,status,orderTime;
+    String customerAddress,customerName,customerPhone,itemsAmount,orderId,shopId,status,orderTime,customerId;
 
     public ModelOrderDriver() {
 
     }
 
-    public ModelOrderDriver(String customerAddress, String customerName, String customerPhone, String itemsAmount, String orderId,String orderTime, String shopId,String status) {
+    public ModelOrderDriver(String customerAddress, String customerName, String customerPhone, String itemsAmount, String orderId,String orderTime, String shopId,String status,String customerId) {
         this.customerAddress = customerAddress;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
@@ -17,7 +17,15 @@ public class ModelOrderDriver {
         this.orderTime = orderTime;
         this.shopId = shopId;
         this.status = status;
+        this.customerId = customerId;
+    }
 
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public String getCustomerAddress() {
