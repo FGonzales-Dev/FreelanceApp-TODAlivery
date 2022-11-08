@@ -16,6 +16,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,16 +28,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
 import com.todaliveryph.todaliverymarketdeliveryapp.MemoryData;
+import com.todaliveryph.todaliverymarketdeliveryapp.MessagesActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsUsersActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderDeliver;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.ShopDetailsActivity;
+
+import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -150,15 +163,14 @@ public class Chat extends AppCompatActivity {
 
                 final String currentTimestamp = String.valueOf(System.currentTimeMillis()).substring(0, 10);
 
-
                 databaseReference.child("chat").child(chatKey).child("users_1").setValue(firebaseAuth.getUid());
                 databaseReference.child("chat").child(chatKey).child("users_2").setValue(getMobile);
                 databaseReference.child("chat").child(chatKey).child("messages").child(currentTimestamp).child("msg").setValue(getTxtMessage);
                 databaseReference.child("chat").child(chatKey).child("messages").child(currentTimestamp).child("mobile").setValue(getUserMobile);
 
                 Toast.makeText(Chat.this, "Sent!", Toast.LENGTH_SHORT).show();
+                prepareNotificationMessage();
                 messageET.setText("");
-
             }
         });
 
@@ -173,5 +185,67 @@ public class Chat extends AppCompatActivity {
 
     public void onBackPressed () {
         finish();
+    }
+
+
+    private void prepareNotificationMessage() {
+
+
+        String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
+        String NOTIFICATION_TITLE = "New Message from " + getUserMobile;
+        String NOTIFICATION_MESSAGE = "You have received a new message!";
+        String NOTIFICATION_TYPE = "NewMessage";
+
+        JSONObject notificationJo = new JSONObject();
+        JSONObject notificationBodyJo = new JSONObject();
+        try {
+
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("buyerUid", firebaseAuth.getUid()); // para ung buyer id is recognized as buyer ah yeah
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMsessage", NOTIFICATION_MESSAGE);
+
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        sendFcmNotification(notificationJo);
+    }
+
+    private void sendFcmNotification(JSONObject notificationJo) {
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+      //          Intent intent = new Intent(getApplicationContext(), MessagesActivity.class);
+           //     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+         //       finish();
+         //       startActivity(intent);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+           //     Intent intent = new Intent(getApplicationContext(), MessagesActivity.class);
+            //    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                Toast.makeText(Chat.this,"Error notif", Toast.LENGTH_SHORT).show();
+           //     finish();
+            //    startActivity(intent);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                //put required headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key=" + Constants.FCM_KEY);
+                return headers;
+            }
+        };
+
+        //Enque volley request
+        Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 }

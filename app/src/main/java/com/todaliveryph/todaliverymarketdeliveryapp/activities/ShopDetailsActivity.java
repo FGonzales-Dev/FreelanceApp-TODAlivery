@@ -707,4 +707,6 @@ public class ShopDetailsActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 
+
+
 }// closing public class
