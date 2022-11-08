@@ -268,7 +268,13 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);
                             selectDriver.setVisibility(View.VISIBLE);
-                        } else if(orderStatus.equals("Completed")){
+                        }
+                        else if(orderStatus.equals("Rider Accepted")){
+                            orderStatusTv.setTextColor(getResources().getColor(R.color.green));
+                            btnAcceptOrder.setVisibility(View.INVISIBLE);
+                            btnDeclineOrder.setVisibility(View.INVISIBLE);
+                            selectDriver.setVisibility(View.INVISIBLE);
+                        }else if(orderStatus.equals("Completed")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.green));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);
                             btnDeclineOrder.setVisibility(View.INVISIBLE);

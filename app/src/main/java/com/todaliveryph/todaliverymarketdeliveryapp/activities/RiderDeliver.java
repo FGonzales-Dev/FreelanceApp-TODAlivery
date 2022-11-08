@@ -13,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,15 +25,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RiderDeliver extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
     FirebaseAuth firebaseAuth;
     TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
-    ImageView imgNoOrder;
     Button acceptBtn, declineBtn,messageSellerBtn;
 
     @Override
@@ -50,7 +60,6 @@ public class RiderDeliver extends AppCompatActivity {
         status = findViewById(R.id.statusTV);
         buyerRoute = findViewById(R.id.buyerRouteTV);
         shopIDTV= findViewById(R.id.shopIDTV);
-        imgNoOrder = findViewById(R.id.noOrderImg);
 
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
@@ -72,9 +81,12 @@ public class RiderDeliver extends AppCompatActivity {
                         acceptOrder();
                             Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
                         removeFromQueue();
+                        prepareNotificationMessage();
                         messageSellerBtn.setVisibility(View.VISIBLE);
                         acceptBtn.setVisibility(View.GONE);
                         declineBtn.setVisibility(View.GONE);
+
+
 
                     }
                 });
@@ -238,6 +250,7 @@ public class RiderDeliver extends AppCompatActivity {
                                     databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("onQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
+                                    databaseReference.child("Users").child(shopIDTV.getText().toString()).child("Orders").child(orderID.getText().toString()).child("orderStatus").setValue("Rider Accepted");
                                 }
 
                                 @Override
@@ -291,13 +304,11 @@ public class RiderDeliver extends AppCompatActivity {
             messageSellerBtn.setVisibility(View.VISIBLE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
-            imgNoOrder.setVisibility(View.GONE);
         }
         else {
             messageSellerBtn.setVisibility(View.GONE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
-            imgNoOrder.setVisibility(View.VISIBLE);
         }
 
 
@@ -324,6 +335,16 @@ public class RiderDeliver extends AppCompatActivity {
                             intent.putExtra("mobile", shopIDTV.getText().toString());
                             intent.putExtra("name", sellerName.getText().toString());
                             intent.putExtra("chat_key", getKey);
+
+                            startActivity(intent);
+                        }
+                        else{
+                            Intent intent = new Intent(RiderDeliver.this, Chat.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("mobile", shopIDTV.getText().toString());
+                            intent.putExtra("name", sellerName.getText().toString());
+                            intent.putExtra("chat_key", "");
+
 
                             startActivity(intent);
                         }
@@ -366,4 +387,65 @@ public class RiderDeliver extends AppCompatActivity {
         });
 
     }
+
+    private void prepareNotificationMessage(){
+        //when seller changed order status, send notif to buyer
+
+        //prepare data  for notif
+
+        String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
+        String NOTIFICATION_TITLE ="Rider Update from "+driverName.getText().toString();
+        String NOTIFICATION_MESSAGE =  "Rider Accepted the order";
+        String NOTIFICATION_TYPE = "RiderAccepted";
+
+        JSONObject notificationJo = new JSONObject();
+        JSONObject notificationBodyJo = new JSONObject();
+        try {
+            // mga sinesend
+            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid",shopIDTV.getText().toString());
+            notificationBodyJo.put("sellerUid",user);
+            notificationBodyJo.put("orderId","Rider Accepted the order");
+            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            //saan i sesend
+            notificationJo.put("to",NOTIFICATION_TOPIC);
+            notificationJo.put("data",notificationBodyJo);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        sendFcmNotification(notificationJo);
+    }
+    private void sendFcmNotification(JSONObject notificationJo) {
+
+        //send volley request (dependencies)
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // send failed
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                //put required headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type","application/json");
+                headers.put("Authorization","key="+Constants.FCM_KEY);
+                return headers;
+            }
+        };
+
+        //Enque volley request
+        Volley.newRequestQueue(this).add(jsonObjectRequest);
+    }
+
+
 }
