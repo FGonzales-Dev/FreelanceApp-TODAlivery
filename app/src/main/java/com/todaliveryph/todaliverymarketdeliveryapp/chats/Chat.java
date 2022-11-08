@@ -62,6 +62,7 @@ public class Chat extends AppCompatActivity {
     private RecyclerView chattingRecyclerView;
     private ChatAdapter chatAdapter;
     private boolean loadingFirstTime = true;
+    String getMobile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +82,7 @@ public class Chat extends AppCompatActivity {
         chatKey = getIntent().getStringExtra("chat_key");
 
 
-        final String getMobile = getIntent().getStringExtra("mobile");
+        getMobile = getIntent().getStringExtra("mobile");
 
         getUserMobile = FirebaseAuth.getInstance().getUid();
         nameTV.setText(getName);
@@ -169,7 +170,7 @@ public class Chat extends AppCompatActivity {
                 databaseReference.child("chat").child(chatKey).child("messages").child(currentTimestamp).child("mobile").setValue(getUserMobile);
 
                 Toast.makeText(Chat.this, "Sent!", Toast.LENGTH_SHORT).show();
-                prepareNotificationMessage();
+                prepareNotificationMessage(getTxtMessage);
                 messageET.setText("");
             }
         });
@@ -188,59 +189,57 @@ public class Chat extends AppCompatActivity {
     }
 
 
-    private void prepareNotificationMessage() {
+    private void prepareNotificationMessage( String message){
+        //when seller changed order status, send notif to buyer
 
+        //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE = "New Message from " + getUserMobile;
-        String NOTIFICATION_MESSAGE = "You have received a new message!";
-        String NOTIFICATION_TYPE = "NewMessage";
+        String NOTIFICATION_TITLE ="New message "+ message;
+        String NOTIFICATION_MESSAGE =  message;
+        String NOTIFICATION_TYPE = "Chat";
 
         JSONObject notificationJo = new JSONObject();
         JSONObject notificationBodyJo = new JSONObject();
         try {
-
-            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
-            notificationBodyJo.put("buyerUid", firebaseAuth.getUid()); // para ung buyer id is recognized as buyer ah yeah
-            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMsessage", NOTIFICATION_MESSAGE);
-
-            notificationJo.put("to", NOTIFICATION_TOPIC);
-            notificationJo.put("data", notificationBodyJo);
-        } catch (Exception e) {
-            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            // mga sinesend
+            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
+            notificationBodyJo.put("buyerUid",getMobile);
+            notificationBodyJo.put("sellerUid",firebaseAuth.getUid());
+            notificationBodyJo.put("orderId",message);
+            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            //saan i sesend
+            notificationJo.put("to",NOTIFICATION_TOPIC);
+            notificationJo.put("data",notificationBodyJo);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo);
     }
-
     private void sendFcmNotification(JSONObject notificationJo) {
 
+        //send volley request (dependencies)
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-      //          Intent intent = new Intent(getApplicationContext(), MessagesActivity.class);
-           //     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-         //       finish();
-         //       startActivity(intent);
+
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-           //     Intent intent = new Intent(getApplicationContext(), MessagesActivity.class);
-            //    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(Chat.this,"Error notif", Toast.LENGTH_SHORT).show();
-           //     finish();
-            //    startActivity(intent);
+                // send failed
             }
-        }) {
+        }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 //put required headers
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "key=" + Constants.FCM_KEY);
+                headers.put("Content-Type","application/json");
+                headers.put("Authorization","key="+Constants.FCM_KEY);
                 return headers;
             }
         };
@@ -248,4 +247,5 @@ public class Chat extends AppCompatActivity {
         //Enque volley request
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
+
 }

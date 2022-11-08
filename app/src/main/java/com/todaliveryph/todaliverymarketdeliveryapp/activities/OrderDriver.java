@@ -9,6 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -17,7 +22,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class OrderDriver extends AppCompatActivity {
 
@@ -27,13 +38,14 @@ public class OrderDriver extends AppCompatActivity {
     String getRoute,getOrderID,getCustomerName,getOrderAmount,getCustomerAddress,getCustomerID,getCustomerPhone;
     TextView driverName, driverNumber, driverStatus, driverRoute,driverStatusNote,driverID;
     Button informBtn;
+    String user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_driver);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
+        user = firebaseAuth.getUid();
         getRoute = getIntent().getStringExtra("route");
         getOrderID= getIntent().getStringExtra("orderID");
         getCustomerName= getIntent().getStringExtra("name");
@@ -73,6 +85,7 @@ public class OrderDriver extends AppCompatActivity {
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("route").setValue(getRoute);
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderTime").setValue(getOrderID);
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerId").setValue(getCustomerID);
+                prepareNotificationMessage();
             }
         });
 
@@ -149,5 +162,66 @@ public class OrderDriver extends AppCompatActivity {
 
 
     }
+
+    private void prepareNotificationMessage(){
+        //when seller changed order status, send notif to buyer
+
+        //prepare data  for notif
+
+        String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
+        String NOTIFICATION_TITLE ="New order in your location ";
+        String NOTIFICATION_MESSAGE =  getOrderID;
+        String NOTIFICATION_TYPE = "Rider";
+
+        JSONObject notificationJo = new JSONObject();
+        JSONObject notificationBodyJo = new JSONObject();
+        try {
+            // mga sinesend
+            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid",driverID.getText().toString());
+            notificationBodyJo.put("sellerUid",firebaseAuth.getUid());
+            notificationBodyJo.put("orderId",getOrderID);
+            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            //saan i sesend
+            notificationJo.put("to",NOTIFICATION_TOPIC);
+            notificationJo.put("data",notificationBodyJo);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        sendFcmNotification(notificationJo);
+    }
+    private void sendFcmNotification(JSONObject notificationJo) {
+
+        //send volley request (dependencies)
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // send failed
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                //put required headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type","application/json");
+                headers.put("Authorization","key="+Constants.FCM_KEY);
+                return headers;
+            }
+        };
+
+        //Enque volley request
+        Volley.newRequestQueue(this).add(jsonObjectRequest);
+    }
+
+
 
 }

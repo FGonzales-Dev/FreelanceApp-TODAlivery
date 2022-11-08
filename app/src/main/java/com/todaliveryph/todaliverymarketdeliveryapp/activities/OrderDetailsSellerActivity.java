@@ -397,7 +397,6 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                //notif sent
 
             }
         }, new Response.ErrorListener() {

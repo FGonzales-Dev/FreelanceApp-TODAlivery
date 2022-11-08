@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsSellerActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsUsersActivity;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderQueue;
 
 import java.util.Random;
 
@@ -66,6 +67,30 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                     showNotification(orderId, sellerUid, buyerUid, notificationTitle, notificationDescription, notificationType);
                 }
         }
+        if (notificationType.equals("Chat")) {
+            String buyerUid = message.getData().get("buyerUid");
+            String sellerUid = message.getData().get("sellerUid");
+            String orderId = message.getData().get("orderId");
+            String notificationTitle = message.getData().get("notificationTitle");
+            String notificationDescription = message.getData().get("notificationMessage"); // or known as notif message
+
+            if (firebaseUser != null && firebaseAuth.getUid().equals(buyerUid)) {
+                //user is signed in and in same user which notif is sent
+                showNotification(orderId, sellerUid, buyerUid, notificationTitle, notificationDescription, notificationType);
+            }
+        }
+        if (notificationType.equals("Rider")) {
+            String riderUid = message.getData().get("riderUid");
+            String sellerUid = message.getData().get("sellerUid");
+            String orderId = message.getData().get("orderId");
+            String notificationTitle = message.getData().get("notificationTitle");
+            String notificationDescription = message.getData().get("notificationDescription");
+
+            if (firebaseUser != null && firebaseAuth.getUid().equals(riderUid)) {
+                //user is signed in and in same user which notif is sent
+                showNotification(orderId, sellerUid, riderUid, notificationTitle, notificationDescription, notificationType);
+            }
+        }
     }
 
     private void  showNotification (String orderId, String sellerUid, String buyerUid, String notificationTitle, String notificationDescription, String notificationType){
@@ -92,6 +117,16 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
             intent = new Intent(this, OrderDetailsUsersActivity.class);
             intent.putExtra("orderId", orderId);
             intent.putExtra("orderTo", sellerUid);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
+        else if(notificationType.equals("Chat")){
+            intent = new Intent(this, MessagesActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
+            else if(notificationType.equals("Rider")){
+            intent = new Intent(this, RiderQueue.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         }

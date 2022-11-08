@@ -235,7 +235,6 @@ public class RiderDeliver extends AppCompatActivity {
 
                                     databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).child("status").setValue("Rider Accepted");
                                     databaseReference.child("Users").child(shopIDTV.getText().toString()).child("Orders").child(orderID.getText().toString()).child("status").setValue("Rider Accepted");
-                                    databaseReference.child("Users").child(user).child("riderAccepted").setValue("true");
                                     databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("onQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
