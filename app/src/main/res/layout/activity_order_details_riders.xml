@@ -278,27 +278,6 @@
             android:textColor="@color/black"
             />
 
-    <Button
-        android:id="@+id/scanQrBtn"
-        android:background="@color/colorPrimary"
-        android:layout_width="200dp"
-        android:layout_marginTop="30dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/noteTV"
-        android:textColor="@color/white"
-        android:layout_centerHorizontal="true"
-        android:text="SCAN ORDER" />
-
-        <Button
-            android:id="@+id/messageBtn"
-            android:background="@color/colorPrimary"
-            android:layout_width="200dp"
-            android:layout_marginTop="20dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/scanQrBtn"
-            android:textColor="@color/white"
-            android:layout_centerHorizontal="true"
-            android:text="CONTACT CUSTOMER" />
     </RelativeLayout>
 
 

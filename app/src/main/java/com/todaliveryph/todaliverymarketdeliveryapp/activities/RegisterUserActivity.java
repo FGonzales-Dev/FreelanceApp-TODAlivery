@@ -26,6 +26,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,14 +51,14 @@ import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
-public class RegisterUserActivity extends AppCompatActivity {
+public class RegisterUserActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
 
     private ImageButton backBTN;
     private ImageView profileIV;
     private EditText fullnameET, phoneET, addressET, emailET, passwordET, cpasswordET;
     private Button registerBTN;
     private TextView registerSellerTV;
-    private Spinner spinner;
+    private Spinner routeSpinner,brgySpinner;
     private TextView registerRiderTV;
 
     //permission constants
@@ -107,14 +108,15 @@ public class RegisterUserActivity extends AppCompatActivity {
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
 
-        spinner = findViewById(R.id.routeSpin);
+        routeSpinner = findViewById(R.id.routeSpin);
+        brgySpinner = findViewById(R.id.brgySpin);
 
-
-        String[] items = new String[]{"STA CRUZ", "SANTIAGO LAUCPAO", "SAN PABLO 1st", "SAN PABLO 2nd",
+        String[] routeItems = new String[]{"STA CRUZ", "SANTIAGO LAUCPAO", "SAN PABLO 1st", "SAN PABLO 2nd",
                 "DELA PAZ", "SAN PEDRO SAUG SANPEDRO PALCARANGAN", "SAN JOSE GUMI","BALANTACAN"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        spinner.setAdapter(adapter);
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, routeItems);
+        routeSpinner.setAdapter(adapter);
+        routeSpinner.setOnItemSelectedListener(this);
         //when back img click
         backBTN.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +161,60 @@ public class RegisterUserActivity extends AppCompatActivity {
 
 
     }   //Closing bracket of onCreate Bundle
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position,
+                               long id) {
+        if (routeSpinner.getSelectedItem().equals("STA CRUZ")) {
+            Toast.makeText(getApplicationContext(), "STA CRUZ",
+                    Toast.LENGTH_SHORT).show();
+            String[] item1 = new String[]{"Remedios", "Sta Cruz", "San Roque Arbol", "Sta Maria", "Sta Teresa 2nd",
+                    "San Agustin", "Sta Catalina", "Calangain"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item1);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("SANTIAGO LAUCPAO")){
+            String[] item2 = new String[]{"Santiago","Laucpao"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item2);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("SAN PABLO 1st")){
+            String[] item3 = new String[]{"San Pablo 1st"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item3);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("SAN PABLO 2nd")){
+            String[] item4 = new String[]{"San Pablo 2nd"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item4);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("DELA PAZ")){
+            String[] item5 = new String[]{"Dela Paz"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item5);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("SAN PEDRO SAUG SANPEDRO PALCARANGAN")){
+            String[] item6 = new String[]{"San Pedro Saug", "San Pedro Palcarangan"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item6);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("SAN JOSE GUMI")){
+            String[] item7 = new String[]{"San Jose Gumi"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item7);
+            brgySpinner.setAdapter(adapter);
+        }
+        else if (routeSpinner.getSelectedItem().equals("BALANTACAN")){
+            String[] item8 = new String[]{"Balantacan"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, item8);
+            brgySpinner.setAdapter(adapter);
+        }
+
+
+    }
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // TODO Auto-generated method stub
+    }
 
     String fullName, phoneNumber, address, email, password, confirmPassword;
 
@@ -233,7 +289,8 @@ public class RegisterUserActivity extends AppCompatActivity {
             hashMap.put("name",""+fullName);
             hashMap.put("phone",""+phoneNumber);
             hashMap.put("address",""+address);
-            hashMap.put("zone",spinner.getSelectedItem());
+            hashMap.put("brgy",brgySpinner.getSelectedItem());
+            hashMap.put("zone",routeSpinner.getSelectedItem());
             hashMap.put("timestamp",""+timestamp);
             hashMap.put("accountType","User");
             hashMap.put("online","true");
@@ -290,7 +347,8 @@ public class RegisterUserActivity extends AppCompatActivity {
                                 hashMap.put("email",""+email);
                                 hashMap.put("name",""+fullName);
                                 hashMap.put("phone",""+phoneNumber);
-                                hashMap.put("zone",spinner.getSelectedItem());
+                                hashMap.put("brgy",brgySpinner.getSelectedItem());
+                                hashMap.put("zone",routeSpinner.getSelectedItem());
                                 hashMap.put("address",""+address);
                                 hashMap.put("timestamp",""+timestamp);
                                 hashMap.put("accountType","User");

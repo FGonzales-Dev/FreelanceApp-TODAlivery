@@ -74,4 +74,6 @@ dependencies {
 
     implementation 'me.dm7.barcodescanner:zbar:1.9.3'
     implementation 'me.dm7.barcodescanner:zxing:1.9.3'
+
+    implementation 'me.srodrigo:androidhintspinner:1.0.0'
 }

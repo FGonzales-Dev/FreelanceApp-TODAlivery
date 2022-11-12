@@ -77,7 +77,6 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
 
         orderId = getIntent().getStringExtra("orderId");
         orderBy = getIntent().getStringExtra("orderBy");
-
         firebaseAuth = FirebaseAuth.getInstance();
 
         loadMyInfo();
@@ -259,7 +258,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         String orderTime = ""+snapshot.child("orderTime").getValue();
                         String orderTo = ""+snapshot.child("orderTo").getValue();
                         String deliveryFee = ""+snapshot.child("deliveryFee").getValue();
-
+                        Toast.makeText(OrderDetailsSellerActivity.this, orderCost,Toast.LENGTH_SHORT).show();
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(Long.parseLong(orderTime));
                         String dateFormated = DateFormat.format("dd/MM/yyyy",calendar).toString();
@@ -288,7 +287,6 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
 
                         orderIdTv.setText(orderId);
                         orderStatusTv.setText(orderStatus);
-                        amountTv.setText("₱ "+orderCost + " ( Excluding Riders Fee"+ " ) ");
                         dateTv.setText(dateFormated);
 
                     }
@@ -300,6 +298,8 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                 });
 
     }
+
+
     private void loadBuyerInfo() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(orderBy)

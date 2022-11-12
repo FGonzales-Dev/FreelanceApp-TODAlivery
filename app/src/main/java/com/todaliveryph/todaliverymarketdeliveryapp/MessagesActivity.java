@@ -28,7 +28,7 @@ public class MessagesActivity extends AppCompatActivity {
 
     private List<MessagesList> messagesLists = new ArrayList<>();
 
-    private String name, mobile, email,getProfilePic, getName;
+    private String name, mobile, email, getProfilePic, getName;
 
     private int unseenMessages = 0;
     private String lastMessage = "";
@@ -73,9 +73,9 @@ public class MessagesActivity extends AppCompatActivity {
 
                 final String profilePicUrl = snapshot.child("Users").child(firebaseAuth.getUid()).child("profileImage").getValue(String.class);
 
-                try{
+                try {
                     Picasso.get().load(profilePicUrl).into(usersProfilePic);
-                }catch (Exception e){
+                } catch (Exception e) {
                     usersProfilePic.setImageResource(R.drawable.user_icon);
                 }
 
@@ -94,20 +94,16 @@ public class MessagesActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-               messagesLists.clear();
-            //    unseenMessages = 0;
-           //     lastMessage = "";
+                messagesLists.clear();
+                //    unseenMessages = 0;
+                //     lastMessage = "";
                 chatKey = "";
 
                 for (DataSnapshot dataSnapshot : snapshot.child("Users").getChildren()) {
 
                     String getMobile = dataSnapshot.getKey();
 
-
                     if (!getMobile.equals(firebaseAuth.getUid())) {
-
-
-
 
                         databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -121,7 +117,7 @@ public class MessagesActivity extends AppCompatActivity {
 
                                     for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
 
-                                       final String getKey = dataSnapshot1.getKey();
+                                        final String getKey = dataSnapshot1.getKey();
 
                                         chatKey = getKey;
 
@@ -138,11 +134,11 @@ public class MessagesActivity extends AppCompatActivity {
 
                                                     final long getMessageKey = Long.parseLong(chatDataSnapshot.getKey());
                                                     final long getLastSeenMessage = Long.parseLong(MemoryData.getLastMessageTS(MessagesActivity.this, getKey));
-                                              //      Toast.makeText(MessagesActivity.this, String.valueOf(getLastSeenMessage),Toast.LENGTH_SHORT).show();
+                                                    //      Toast.makeText(MessagesActivity.this, String.valueOf(getLastSeenMessage),Toast.LENGTH_SHORT).show();
                                                     lastMessage = chatDataSnapshot.child("msg").getValue(String.class);
 
                                                     if (getMessageKey >= getLastSeenMessage) {
-                                                       // unseenMessages++;
+                                                        // unseenMessages++;
                                                         MessagesList messagesList = new MessagesList(getMobile, getName, lastMessage, getProfilePic, unseenMessages, chatKey);
 
                                                         messagesLists.add(messagesList);
@@ -160,9 +156,7 @@ public class MessagesActivity extends AppCompatActivity {
                                         }
 
 
-
                                     }
-
 
 
                                 }
@@ -180,11 +174,7 @@ public class MessagesActivity extends AppCompatActivity {
                     }
 
 
-
-
-
                 }
-
 
 
             }

@@ -65,7 +65,9 @@ public class OrderDriver extends AppCompatActivity {
         informBtn = findViewById(R.id.informBtn);
 
         getFirstQueue();
-
+        if (driverName.getText().toString().equals("No driver yet")){
+            informBtn.setVisibility(View.GONE);
+        }
         if(driverStatus.getText().equals("Driver Accepted")){
             informBtn.setText("CONTACT DRIVER");
         }

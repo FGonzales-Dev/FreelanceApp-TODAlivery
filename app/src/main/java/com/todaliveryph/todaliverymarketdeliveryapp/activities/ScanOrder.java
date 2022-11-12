@@ -200,10 +200,16 @@ public class ScanOrder extends AppCompatActivity {
     }
 
     private void completeOrderScan(String orderId){
-        databaseReference.child("Users").child(getShopId).child("Orders").child(orderId).child("orderStatus").setValue("Completed");
-        databaseReference.child("driverOrder").child(user).child("orders").child(orderId).child("status").setValue("Completed");
-        Toast.makeText(ScanOrder.this,"Successfully Completed the order!", Toast.LENGTH_LONG).show();
-        finish();
+        if(orderId.equals(getOrderId)){
+            databaseReference.child("Users").child(getShopId).child("Orders").child(orderId).child("orderStatus").setValue("Completed");
+            databaseReference.child("driverOrder").child(user).child("orders").child(orderId).child("status").setValue("Completed");
+            Toast.makeText(ScanOrder.this,"Successfully Completed the order!", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        else{
+            Toast.makeText(ScanOrder.this,"QR Code not found! Try again", Toast.LENGTH_LONG).show();
+        }
+
     }
 
 

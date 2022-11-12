@@ -28,7 +28,6 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     String getCustomerName, getCustomerPhone, getCustomerAddress, getShopId, getOrderId, getDate, getStatus, getAmount,getCustomerId;
     TextView customerNameTV,customerIDTV, customerAddressTV, customerPhoneTV, shopNameTV, shopAddressTV, shopPhoneTV, orderIdTV, dateTV, statusTV, amountTV, noteTV;
-    Button qrBtn, contactCustomerBtn;
 
     String user;
 
@@ -62,31 +61,12 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         noteTV = findViewById(R.id.noteTV);
 
 
-        qrBtn = findViewById(R.id.scanQrBtn);
 
-        contactCustomerBtn = findViewById(R.id.messageBtn);
 
         loadShopInfo();
         loadOrderInfo();
 
-        qrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(OrderDetailsRidersActivity.this, ScanOrder.class);
 
-                intent.putExtra("orderId", getOrderId);
-                intent.putExtra("shopId", getShopId);
-
-                startActivity(intent);
-            }
-        });
-
-        contactCustomerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialPhone();
-            }
-        });
     }
 
     private void loadOrderInfo() {
@@ -112,7 +92,6 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
             statusTV.setTextColor(this.getResources().getColor(R.color.teal_200));
         } else if (statusTV.getText().equals("Completed")) {
             noteTV.setVisibility(View.GONE);
-            qrBtn.setVisibility(View.GONE);
             statusTV.setTextColor(this.getResources().getColor(R.color.green));
         } else {
             noteTV.setVisibility(View.VISIBLE);

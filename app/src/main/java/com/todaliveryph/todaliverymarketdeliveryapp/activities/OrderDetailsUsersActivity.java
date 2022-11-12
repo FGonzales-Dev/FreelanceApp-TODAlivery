@@ -251,7 +251,7 @@ public class OrderDetailsUsersActivity extends AppCompatActivity {
 
                         orderIdTv.setText(orderId);
                         orderStatusTv.setText(orderStatus);
-                        amountTv.setText("₱ "+orderCost+" ( Excluding Riders Fee )");
+                        amountTv.setText("₱ "+orderCost);
                         dateTv.setText(formatedDate);
 
                         String generatedQrText = orderIdTv.getText().toString().trim();

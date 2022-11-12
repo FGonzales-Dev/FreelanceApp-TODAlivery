@@ -5,13 +5,14 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
@@ -115,6 +116,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         //inflate layout
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_quantity, null);
         //declaration:
+        Spinner spinner = view.findViewById(R.id.kiloSpin);
         ImageView productIv = view.findViewById(R.id.productIv);
         TextView titleTv = view.findViewById(R.id.adminUsernameTv);
         TextView pQuantityTv = view.findViewById(R.id.pQuantityTv);
@@ -128,7 +130,10 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         ImageButton decrementBtn = view.findViewById(R.id.decrementBtn);
         Button continueBtn = view.findViewById(R.id.continueBtn);
 
-        //get data from model product
+        String[] routeItems = new String[]{"Select kilo","1/4 Kg","1/2 Kg","1 Kg"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, routeItems);
+        spinner.setAdapter(adapter);
+
         String productId = modelProduct.getProductId();
         String title = modelProduct.getProductTitle();
         String productQuantity = modelProduct.getProductQuantity();
@@ -220,6 +225,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
                 dialog.dismiss();
             }
         });
+
     }
 
 

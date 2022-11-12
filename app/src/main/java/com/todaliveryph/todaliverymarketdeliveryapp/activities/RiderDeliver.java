@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
+import com.todaliveryph.todaliverymarketdeliveryapp.OrderDetailsRidersActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
 
@@ -39,7 +40,7 @@ public class RiderDeliver extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
-    Button acceptBtn, declineBtn,messageSellerBtn;
+    Button acceptBtn, declineBtn,messageSellerBtn,qrBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class RiderDeliver extends AppCompatActivity {
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
         messageSellerBtn = findViewById(R.id.contactSellerBtn);
+        qrBtn = findViewById(R.id.qrBtn);
 
         loadDelivery();
         showControls();
@@ -138,6 +140,18 @@ public class RiderDeliver extends AppCompatActivity {
             }
         });
 
+        qrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RiderDeliver.this, ScanOrder.class);
+
+                intent.putExtra("orderId", orderID.getText().toString());
+                intent.putExtra("shopId",  shopIDTV.getText().toString());
+
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void loadDelivery() {
@@ -177,6 +191,9 @@ public class RiderDeliver extends AppCompatActivity {
                                         }
                                         else if(getStatus.equals("Rider Accepted")){
                                             status.setText("You can now proceed to deliver the products");
+                                        }
+                                        else if(getStatus.equals("Completed")){
+                                            status.setText("Order successfully delivered. Wait for another order");
                                         }
                                         showControls();
                                         loadShopInfo(getShopID);
@@ -302,10 +319,12 @@ public class RiderDeliver extends AppCompatActivity {
         }
         else if(status.getText().toString().equals("You can now proceed to deliver the products")){
             messageSellerBtn.setVisibility(View.VISIBLE);
+            qrBtn.setVisibility(View.VISIBLE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
         }
-        else {
+        else{
+            qrBtn.setVisibility(View.GONE);
             messageSellerBtn.setVisibility(View.GONE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);

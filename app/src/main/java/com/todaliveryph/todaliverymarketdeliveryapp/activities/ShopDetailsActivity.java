@@ -54,7 +54,9 @@ import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelProduct;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import p32929.androideasysql_library.Column;
@@ -554,7 +556,29 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List brgy1 = Arrays.asList("Sta Cruz");
+                        List brgy2 = Arrays.asList("Remedios", "San Roque Arbol", "Sta Maria","Calangain","San Pablo 2nd",
+                                "Dela Paz","San Pedro Saug","San Pedro Palcarangan","San Jose Gumi","Balantacan");
+                        List brgy3 = Arrays.asList("Sta Teresa 2nd", "San Agustin","Sta Catalina","Laucpao","San Pablo 1st");
                         for (DataSnapshot ds : snapshot.getChildren()) {
+                            String brgy = ds.child("brgy").getValue(String.class);
+
+                            try {
+                                if(brgy1.contains(brgy)){
+                                    deliveryFee ="50";
+                                    deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                }
+                                else if(brgy2.contains(brgy)){
+                                    deliveryFee ="60";
+                                    deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                }
+                                else  if(brgy3.contains(brgy)){
+                                    deliveryFee ="70";
+                                    deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                }
+                            }catch (Exception e){
+
+                            }
 
                         }
                     }
@@ -579,7 +603,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 shopEmail = "" + snapshot.child("email").getValue();
                 shopPhone = "" + snapshot.child("phone").getValue();
                 shopAddress = "" + snapshot.child("address").getValue();
-                deliveryFee = "" + snapshot.child("deliveryFee").getValue();
+             //   deliveryFee = "" + snapshot.child("deliveryFee").getValue();
                 String profileImage = "" + snapshot.child("profileImage").getValue();
                 String shopOpen = "" + snapshot.child("shopOpen").getValue();
 
@@ -588,7 +612,6 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
                 shopNameTv.setText(shopName);
                 emailTv.setText(shopEmail);
-                deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
                 addressTv.setText(shopAddress);
                 phoneTv.setText(shopPhone);
                 if (shopOpen.equals("true")) {
