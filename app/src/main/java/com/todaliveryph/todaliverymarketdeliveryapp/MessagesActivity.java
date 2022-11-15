@@ -5,187 +5,175 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
-import com.todaliveryph.todaliverymarketdeliveryapp.messages.MessagesAdapter;
-import com.todaliveryph.todaliverymarketdeliveryapp.messages.MessagesList;
+import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
+import com.todaliveryph.todaliverymarketdeliveryapp.messages.Users;
+import com.todaliveryph.todaliverymarketdeliveryapp.messages.UsersAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Locale;
 
 public class MessagesActivity extends AppCompatActivity {
 
-    private List<MessagesList> messagesLists = new ArrayList<>();
-
-    private String name, mobile, email, getProfilePic, getName;
-
-    private int unseenMessages = 0;
-    private String lastMessage = "";
-
-    private String chatKey;
 
     private RecyclerView messageRecyclerView;
-    private MessagesAdapter messagesAdapter;
-
+    private List<Users> mUsers;
+    private UsersAdapter usersAdapter;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
-    private FirebaseAuth firebaseAuth;
-
-
+    FirebaseUser firebaseUser;
+    EditText searchET;
+    private List<String> usersList;
+    ImageView backBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
 
-
-        final CircleImageView usersProfilePic = findViewById(R.id.usersProfilePic);
-
         messageRecyclerView = findViewById(R.id.messageRecyclerView);
-
-        firebaseAuth = FirebaseAuth.getInstance();
-
-
         messageRecyclerView.setHasFixedSize(true);
         messageRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        searchET =findViewById(R.id.searchTxtB);
+        backBtn = findViewById(R.id.backBtn1);
+        usersList = new ArrayList<>();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        messagesAdapter = new MessagesAdapter(messagesLists, MessagesActivity.this);
-
-        messageRecyclerView.setAdapter(messagesAdapter);
-
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Loading Info...");
-        progressDialog.show();
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
-                final String profilePicUrl = snapshot.child("Users").child(firebaseAuth.getUid()).child("profileImage").getValue(String.class);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
 
-                try {
-                    Picasso.get().load(profilePicUrl).into(usersProfilePic);
-                } catch (Exception e) {
-                    usersProfilePic.setImageResource(R.drawable.user_icon);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usersList.clear();
+              //  latestMessage=0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Chat chat = snapshot.getValue(Chat.class);
+
+                    if (chat.getSender().equals(firebaseUser.getUid())) {
+                        usersList.add(chat.getReceiver());
+                    }
+
+                    if (chat.getReceiver().equals(firebaseUser.getUid())) {
+                            usersList.add(chat.getSender());
+
+                    }
                 }
 
 
-                progressDialog.dismiss();
+                readChats();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                progressDialog.dismiss();
 
             }
         });
 
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        searchET.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                messagesLists.clear();
-                //    unseenMessages = 0;
-                //     lastMessage = "";
-                chatKey = "";
+            }
 
-                for (DataSnapshot dataSnapshot : snapshot.child("Users").getChildren()) {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                    String getMobile = dataSnapshot.getKey();
+            }
 
-                    if (!getMobile.equals(firebaseAuth.getUid())) {
-
-                        databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
-
-
-                                int getChatCounts = (int) snapshot1.getChildrenCount();
-
-
-                                if (getChatCounts > 0) {
-
-                                    for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
-
-                                        final String getKey = dataSnapshot1.getKey();
-
-                                        chatKey = getKey;
-
-                                        if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2") && dataSnapshot1.hasChild("messages")) {
-
-                                            final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
-                                            final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
-                                            getName = dataSnapshot.child("name").getValue(String.class);
-                                            getProfilePic = dataSnapshot.child("profileImage").getValue(String.class);
-                                            if ((getUserOne.equals(getMobile) && getUserTwo.equals(firebaseAuth.getUid())) || (getUserOne.equals(firebaseAuth.getUid()) && getUserTwo.equals(getMobile))) {
-
-
-                                                for (DataSnapshot chatDataSnapshot : dataSnapshot1.child("messages").getChildren()) {
-
-                                                    final long getMessageKey = Long.parseLong(chatDataSnapshot.getKey());
-                                                    final long getLastSeenMessage = Long.parseLong(MemoryData.getLastMessageTS(MessagesActivity.this, getKey));
-                                                    //      Toast.makeText(MessagesActivity.this, String.valueOf(getLastSeenMessage),Toast.LENGTH_SHORT).show();
-                                                    lastMessage = chatDataSnapshot.child("msg").getValue(String.class);
-
-                                                    if (getMessageKey >= getLastSeenMessage) {
-                                                        // unseenMessages++;
-                                                        MessagesList messagesList = new MessagesList(getMobile, getName, lastMessage, getProfilePic, unseenMessages, chatKey);
-
-                                                        messagesLists.add(messagesList);
-                                                        messagesAdapter.updateData(messagesLists);
-
-
-                                                    }
-
-
-                                                }
-
-                                            }
-
-
-                                        }
-
-
-                                    }
-
-
-                                }
-
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
-
-                    }
-
+            @Override
+            public void afterTextChanged(Editable s) {
+                try{
+                    filter(s.toString());
+                }catch (Exception e){
 
                 }
 
-
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-
         });
 
 
     }
+
+    private void filter(String text) {
+        ArrayList<Users> filterList = new ArrayList<>();
+
+        for(Users item : mUsers){
+            if(item.getName().toLowerCase().contains(text.toLowerCase())){
+                filterList.add(item);
+            }
+        }
+        usersAdapter.filteredList(filterList);
+    }
+
+    private void readChats() {
+        mUsers = new ArrayList<>();
+       // Collections.sort(usersList);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        databaseReference.orderByChild("name").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUsers.clear();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Users user = snapshot.getValue(Users.class);
+
+                    for (String id : usersList) {
+                        if (user.getUid().equals(id)) {
+                            if (mUsers.size() != 0) {
+                                int flag = 0;
+                                for (Users u : mUsers) {
+                                    if (user.getUid().equals(u.getUid())) {
+                                        flag = 1;
+                                        break;
+                                    }
+                                }
+                                if (flag == 0)
+                                    mUsers.add(user);
+                            } else {
+                                mUsers.add(user);
+                            }
+                        }
+
+                    }
+
+                }
+
+                usersAdapter = new UsersAdapter(MessagesActivity.this, mUsers);
+                messageRecyclerView.setAdapter(usersAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+
+
 }

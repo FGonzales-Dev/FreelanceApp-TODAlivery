@@ -69,15 +69,15 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 }
         }
         if (notificationType.equals("Chat")) {
-            String buyerUid = message.getData().get("buyerUid");
-            String sellerUid = message.getData().get("sellerUid");
-            String orderId = message.getData().get("orderId");
+            String oppoUid = message.getData().get("oppoUid");
+            String myUid = message.getData().get("myUid");
+            String chat = message.getData().get("message");
             String notificationTitle = message.getData().get("notificationTitle");
             String notificationDescription = message.getData().get("notificationMessage"); // or known as notif message
 
-            if (firebaseUser != null && firebaseAuth.getUid().equals(buyerUid)) {
+            if (firebaseUser != null && firebaseAuth.getUid().equals(oppoUid)) {
                 //user is signed in and in same user which notif is sent
-                showNotification(orderId, sellerUid, buyerUid, notificationTitle, notificationDescription, notificationType);
+                showNotification(chat, myUid, oppoUid, notificationTitle, notificationDescription, notificationType);
             }
         }
         if (notificationType.equals("Rider")) {

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,9 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderDeliver;
-import com.todaliveryph.todaliverymarketdeliveryapp.activities.ScanOrder;
-import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
+import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 
 import java.util.Calendar;
 
@@ -139,7 +136,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
                                 && (getUserOne.equals(user) || getUserTwo.equals(user))) {
                             final String getKey = dataSnapshot1.getKey();
 
-                            Intent intent = new Intent(OrderDetailsRidersActivity.this, Chat.class);
+                            Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", getCustomerId);
                             intent.putExtra("name", getCustomerName);
@@ -148,7 +145,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
 
                             startActivity(intent);
                         } else{
-                            Intent intent = new Intent(OrderDetailsRidersActivity.this, Chat.class);
+                            Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("mobile", getCustomerId);
                             intent.putExtra("name", getCustomerName);
@@ -165,7 +162,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
                 }
 
                 if (!snapshot1.hasChildren()) {
-                    Intent intent = new Intent(OrderDetailsRidersActivity.this, Chat.class);
+                    Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
 
                     intent.putExtra("mobile", getCustomerId);
                     intent.putExtra("name", getCustomerName);

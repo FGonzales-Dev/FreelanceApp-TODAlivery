@@ -23,7 +23,6 @@
                 android:layout_marginStart="20dp"/>
             
             <LinearLayout
-                android:layout_toStartOf="@id/unseenMessages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -48,24 +47,12 @@
                     android:maxLines="1"
                     android:textSize="14sp"
                     android:text="Last message here"
-                    android:textColor="@color/theme_color_80"
+                    android:textColor="@color/colorPrimary"
                     android:layout_marginTop="5dp"
                     android:textStyle="bold"/>
 
             </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/unseenMessages"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="1"
-                        android:textSize="10sp"
-                        android:textColor="#FFFFFF"
-                        android:gravity="center"
-                        android:background="@drawable/round_back_theme_1000"/>
             
         </RelativeLayout>
         

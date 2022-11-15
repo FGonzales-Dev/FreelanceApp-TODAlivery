@@ -303,7 +303,6 @@ public class RegisterUserActivity extends AppCompatActivity  implements AdapterV
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            // db updated
 
                             progressDialog.dismiss();
                             startActivity(new Intent(RegisterUserActivity.this, MainUserActivity.class));

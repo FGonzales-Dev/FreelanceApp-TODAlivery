@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,9 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
-import com.todaliveryph.todaliverymarketdeliveryapp.OrderDetailsRidersActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
-import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
+import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 
 import org.json.JSONObject;
 
@@ -334,76 +332,13 @@ public class RiderDeliver extends AppCompatActivity {
     }
 
     private void dialPhone() {
-        databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot1) {
 
-                for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
-
-                    if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
-
-                        final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
-                        final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
-
-                        if ((getUserOne.equals(shopIDTV.getText().toString()) || getUserTwo.equals(shopIDTV.getText().toString()))
-                                && (getUserOne.equals(user) || getUserTwo.equals(user))) {
-                            final String getKey = dataSnapshot1.getKey();
-
-                            Intent intent = new Intent(RiderDeliver.this, Chat.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("mobile", shopIDTV.getText().toString());
-                            intent.putExtra("name", sellerName.getText().toString());
-                            intent.putExtra("chat_key", getKey);
-
-                            startActivity(intent);
-                        }
-                        else{
-                            Intent intent = new Intent(RiderDeliver.this, Chat.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("mobile", shopIDTV.getText().toString());
-                            intent.putExtra("name", sellerName.getText().toString());
-                            intent.putExtra("chat_key", "");
+        Intent intent = new Intent(RiderDeliver.this, MessageActivity.class);
+        intent.putExtra("name", sellerName.getText().toString());
+        intent.putExtra("receiverID", shopIDTV.getText().toString());
+        startActivity(intent);
 
 
-                            startActivity(intent);
-                        }
-
-                    }
-                    else{
-                        Intent intent = new Intent(RiderDeliver.this, Chat.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("mobile", shopIDTV.getText().toString());
-                        intent.putExtra("name", sellerName.getText().toString());
-                        intent.putExtra("chat_key", "");
-
-
-                        startActivity(intent);
-                    }
-
-                }
-
-                if (!snapshot1.hasChildren()) {
-                    Intent intent = new Intent(RiderDeliver.this, Chat.class);
-
-                    intent.putExtra("mobile", shopIDTV.getText().toString());
-                    intent.putExtra("name", sellerName.getText().toString());
-                    intent.putExtra("chat_key", "");
-
-                    startActivity(intent);
-                }
-
-
-
-
-
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
     }
 

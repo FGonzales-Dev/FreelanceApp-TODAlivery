@@ -3,15 +3,12 @@ package com.todaliveryph.todaliverymarketdeliveryapp.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -41,13 +38,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
-import com.todaliveryph.todaliverymarketdeliveryapp.MemoryData;
-import com.todaliveryph.todaliverymarketdeliveryapp.MessagesActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import com.todaliveryph.todaliverymarketdeliveryapp.adapters.AdapterCartItem;
 import com.todaliveryph.todaliverymarketdeliveryapp.adapters.AdapterProductUser;
-import com.todaliveryph.todaliverymarketdeliveryapp.chats.Chat;
-import com.todaliveryph.todaliverymarketdeliveryapp.messages.MessagesList;
+import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelCartItem;
 import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelProduct;
 
@@ -485,67 +479,11 @@ public class ShopDetailsActivity extends AppCompatActivity {
     }
 
     private void dialPhone() {
-        databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot1) {
 
-                for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
-
-                    if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
-
-                        final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
-                        final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
-
-                        if ((getUserOne.equals(shopUid) || getUserTwo.equals(shopUid))
-                                && (getUserOne.equals(user) || getUserTwo.equals(user))) {
-                            final String getKey = dataSnapshot1.getKey();
-
-                            Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("mobile", shopUid);
-                            intent.putExtra("name", getShopName);
-                            intent.putExtra("profileImage", getProfilePic);
-                            intent.putExtra("chat_key", getKey);
-
-                            startActivity(intent);
-                        }
-                        else {
-                            Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("mobile", shopUid);
-                            intent.putExtra("name", getShopName);
-                            intent.putExtra("profileImage", getProfilePic);
-                            intent.putExtra("chat_key", "");
-
-                            startActivity(intent);
-                        }
-
-
-                    }
-
-
-                }
-
-                if (!snapshot1.hasChildren()) {
-                    Intent intent = new Intent(ShopDetailsActivity.this, Chat.class);
-
-                    intent.putExtra("mobile", shopUid);
-                    intent.putExtra("name", getShopName);
-                    intent.putExtra("profileImage", getProfilePic);
-                    intent.putExtra("chat_key", "");
-
-                    startActivity(intent);
-                }
-
-
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        Intent intent = new Intent(ShopDetailsActivity.this, MessageActivity.class);
+        intent.putExtra("name", getShopName);
+        intent.putExtra("receiverID", shopUid);
+        startActivity(intent);
 
     }
 
@@ -556,31 +494,37 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List brgy1 = Arrays.asList("Sta Cruz");
-                        List brgy2 = Arrays.asList("Remedios", "San Roque Arbol", "Sta Maria","Calangain","San Pablo 2nd",
-                                "Dela Paz","San Pedro Saug","San Pedro Palcarangan","San Jose Gumi","Balantacan");
-                        List brgy3 = Arrays.asList("Sta Teresa 2nd", "San Agustin","Sta Catalina","Laucpao","San Pablo 1st");
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            String brgy = ds.child("brgy").getValue(String.class);
+                        try{
+                            List brgy1 = Arrays.asList("Sta Cruz");
+                            List brgy2 = Arrays.asList("Remedios", "San Roque Arbol", "Sta Maria","Calangain","San Pablo 2nd",
+                                    "Dela Paz","San Pedro Saug","San Pedro Palcarangan","San Jose Gumi","Balantacan");
+                            List brgy3 = Arrays.asList("Sta Teresa 2nd", "San Agustin","Sta Catalina","Laucpao","San Pablo 1st");
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                String brgy = ds.child("brgy").getValue(String.class);
 
-                            try {
-                                if(brgy1.contains(brgy)){
-                                    deliveryFee ="50";
-                                    deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                try {
+                                    if(brgy1.contains(brgy)){
+                                        deliveryFee ="50";
+                                        deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                    }
+                                    else if(brgy2.contains(brgy)){
+                                        deliveryFee ="60";
+                                        deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                    }
+                                    else  if(brgy3.contains(brgy)){
+                                        deliveryFee ="70";
+                                        deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
+                                    }
+                                }catch (Exception e){
+
                                 }
-                                else if(brgy2.contains(brgy)){
-                                    deliveryFee ="60";
-                                    deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
-                                }
-                                else  if(brgy3.contains(brgy)){
-                                    deliveryFee ="70";
-                                    deliveryFeeTv.setText("Service Fee: ₱ " + deliveryFee);
-                                }
-                            }catch (Exception e){
 
                             }
+                        }
+                        catch (Exception e){
 
                         }
+
                     }
 
                     @Override

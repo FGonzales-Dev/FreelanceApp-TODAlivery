@@ -78,9 +78,8 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".chats.Chat"
-            android:exported="false"
-            android:noHistory="true">
+            android:name=".chats.MessageActivity"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

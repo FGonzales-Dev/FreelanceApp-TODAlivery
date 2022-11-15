@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Filter;
@@ -105,13 +106,15 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         });
     }
 
-
+    private double origCost = 0;
     private double cost = 0;
     private double finalCost = 0;
     private int quantity = 0;
 
 
-    private void showQuantityDialog(ModelProduct modelProduct) {
+
+
+    public void showQuantityDialog(ModelProduct modelProduct) {
 
         //inflate layout
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_quantity, null);
@@ -127,12 +130,11 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         TextView finalPriceTv = view.findViewById(R.id.finalPriceTv);
         ImageButton incrementBtn = view.findViewById(R.id.incrementBtn);
         TextView quantityTv = view.findViewById(R.id.adminUseremailTv);
+        TextView kiloTitleTv = view.findViewById(R.id.kiloTitle);
+        TextView kiloAmountTv = view.findViewById(R.id.kgTv);
         ImageButton decrementBtn = view.findViewById(R.id.decrementBtn);
         Button continueBtn = view.findViewById(R.id.continueBtn);
 
-        String[] routeItems = new String[]{"Select kilo","1/4 Kg","1/2 Kg","1 Kg"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, routeItems);
-        spinner.setAdapter(adapter);
 
         String productId = modelProduct.getProductId();
         String title = modelProduct.getProductTitle();
@@ -140,6 +142,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         String description = modelProduct.getProductDescription();
         String discountNote = modelProduct.getDiscountNote();
         String image = modelProduct.getProductIcon();
+
 
         final String price;
 
@@ -154,7 +157,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             discountedNoteTv.setVisibility(View.GONE);
             price = modelProduct.getOriginalPrice();
         }
-
+        origCost = Double.parseDouble(price.replaceAll("₱",""));
         cost = Double.parseDouble(price.replaceAll("₱",""));
         finalCost = Double.parseDouble(price.replaceAll("₱",""));
         quantity = 1;
@@ -173,7 +176,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         //set data
 
         titleTv.setText(""+title+" ( "+productQuantity+" )");
-        pQuantityTv.setText(""+productQuantity);
+        pQuantityTv.setText(""+productQuantity.replace(" ","").toLowerCase());
         descriptionTv.setText(""+description);
         discountedNoteTv.setText(""+discountNote);
         quantityTv.setText(""+quantity);
@@ -184,6 +187,70 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         AlertDialog dialog = builder.create();
         dialog.show();
 
+        if(pQuantityTv.getText().equals("1kg")){
+            kiloTitleTv.setVisibility(View.VISIBLE);
+            String[] routeItems = new String[]{"1/4kg","1/2kg","1kg"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, routeItems);
+            spinner.setAdapter(adapter);
+            decrementBtn.setVisibility(View.GONE);
+            incrementBtn.setVisibility(View.GONE);
+            quantityTv.setVisibility(View.GONE);
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+
+
+                    if (spinner.getSelectedItem().equals("1kg")) {
+                        finalCost =  origCost;
+                        finalPriceTv.setText("₱ "+String.format("%.2f",finalCost));
+                        decrementBtn.setVisibility(View.VISIBLE);
+                        incrementBtn.setVisibility(View.VISIBLE);
+                        quantityTv.setVisibility(View.VISIBLE);
+                        kiloAmountTv.setVisibility(View.VISIBLE);
+
+                    }
+                    else if(spinner.getSelectedItem().equals("1/4kg")){
+                        finalCost =  (origCost/4);
+                        finalPriceTv.setText("₱ "+String.format("%.2f",finalCost));
+                        decrementBtn.setVisibility(View.GONE);
+                        incrementBtn.setVisibility(View.GONE);
+                        quantityTv.setVisibility(View.GONE);
+                        kiloAmountTv.setVisibility(View.GONE);
+                    }
+                    else if(spinner.getSelectedItem().equals("1/2kg")){
+                        finalCost =  (origCost/2);
+                        finalPriceTv.setText("₱ "+String.format("%.2f",finalCost));
+                        decrementBtn.setVisibility(View.GONE);
+                        incrementBtn.setVisibility(View.GONE);
+                        quantityTv.setVisibility(View.GONE);
+                        kiloAmountTv.setVisibility(View.GONE);
+                    }
+                    else{
+                        decrementBtn.setVisibility(View.GONE);
+                        incrementBtn.setVisibility(View.GONE);
+                        quantityTv.setVisibility(View.GONE);
+                        kiloAmountTv.setVisibility(View.GONE);
+                      //  kiloTitleTv.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+
+                }
+            });
+        }
+
+        else{
+            kiloAmountTv.setVisibility(View.GONE);
+           kiloTitleTv.setVisibility(View.GONE);
+            spinner.setVisibility(View.GONE);
+            decrementBtn.setVisibility(View.VISIBLE);
+            incrementBtn.setVisibility(View.VISIBLE);
+            quantityTv.setVisibility(View.VISIBLE);
+        }
 
         incrementBtn.setOnClickListener(new View.OnClickListener() {
             @Override
