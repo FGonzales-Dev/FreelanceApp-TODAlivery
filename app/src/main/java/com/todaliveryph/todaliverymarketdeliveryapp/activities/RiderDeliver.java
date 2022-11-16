@@ -66,7 +66,7 @@ public class RiderDeliver extends AppCompatActivity {
         qrBtn = findViewById(R.id.qrBtn);
 
         loadDelivery();
-        showControls();
+
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,7 +153,7 @@ public class RiderDeliver extends AppCompatActivity {
     }
 
     private void loadDelivery() {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("driverOrder")) {
@@ -161,7 +161,7 @@ public class RiderDeliver extends AppCompatActivity {
 
                         DatabaseReference myRef = databaseReference.child("driverOrder").child(user).child("orders");
                         Query query = myRef.orderByKey().limitToLast(1);
-                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        query.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
