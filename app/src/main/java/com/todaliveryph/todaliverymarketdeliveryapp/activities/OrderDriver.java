@@ -65,12 +65,8 @@ public class OrderDriver extends AppCompatActivity {
         informBtn = findViewById(R.id.informBtn);
 
         getFirstQueue();
-        if (driverName.getText().toString().equals("No driver yet")){
-            informBtn.setVisibility(View.GONE);
-        }
-        if(driverStatus.getText().equals("Driver Accepted")){
-            informBtn.setText("CONTACT DRIVER");
-        }
+        controlButton();
+
         informBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,7 +92,7 @@ public class OrderDriver extends AppCompatActivity {
     private void getFirstQueue() {
         DatabaseReference myRef = databaseReference.child("queue").child(getRoute);
         Query query = myRef.orderByKey().limitToFirst(1);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -119,6 +115,7 @@ public class OrderDriver extends AppCompatActivity {
                                             driverRoute.setText(route);
                                             driverID.setText(getDriverID);
                                             checkStatus();
+                                            controlButton();
                                         }
 
                                         @Override
@@ -161,8 +158,15 @@ public class OrderDriver extends AppCompatActivity {
                 throw databaseError.toException();
             }
         });
+    }
 
-
+    private void controlButton(){
+        if (driverName.getText().toString().equals("No driver yet")){
+            informBtn.setVisibility(View.GONE);
+        }
+        if(driverStatus.getText().equals("Driver Accepted")){
+            informBtn.setText("CONTACT DRIVER");
+        }
     }
 
     private void prepareNotificationMessage(){

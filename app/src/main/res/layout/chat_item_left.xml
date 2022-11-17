@@ -19,9 +19,9 @@
         android:text="Receiver's message"/>
     <ImageView
         android:id="@+id/showImgMessage"
-        android:padding="10dp"
+        android:padding="20dp"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/my_msg_back"
+        android:background="@drawable/receiver_msg_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

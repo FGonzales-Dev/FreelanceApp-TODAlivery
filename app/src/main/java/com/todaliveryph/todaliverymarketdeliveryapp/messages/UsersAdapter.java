@@ -60,7 +60,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
         try {
             Picasso.get().load(users.getProfileImage()).into(holder.profilePic);
         } catch (Exception e) {
-            holder.profilePic.setImageResource(R.drawable.user_icon);
+            holder.profilePic.setImageResource(R.drawable.user_icon_black);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
