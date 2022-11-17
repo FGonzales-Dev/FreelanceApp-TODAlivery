@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +40,7 @@ public class RiderDeliver extends AppCompatActivity {
     TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
     Button acceptBtn, declineBtn,messageSellerBtn,qrBtn;
-
+    ImageView backBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +65,9 @@ public class RiderDeliver extends AppCompatActivity {
         declineBtn = findViewById(R.id.declineBtn);
         messageSellerBtn = findViewById(R.id.contactSellerBtn);
         qrBtn = findViewById(R.id.qrBtn);
-
+        backBtn = findViewById(R.id.backBTN);
         loadDelivery();
-
+        showControls();
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,7 +116,12 @@ public class RiderDeliver extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int which) {
                         removeFromQueue();
-                        //   Toast.makeText(RiderDeliver.this,"You declined the order, you need to queue again!",Toast.LENGTH_SHORT).show();
+                        databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).removeValue();
+                        databaseReference.child("Users").child(user).child("lastQueue").setValue("");
+                        databaseReference.child("Users").child(user).child("onQueue").setValue("");
+                        databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
+                        startActivity(new Intent(RiderDeliver.this, RiderQueue.class));
+                        finish();
                     }
                 });
 
@@ -147,6 +153,13 @@ public class RiderDeliver extends AppCompatActivity {
                 intent.putExtra("shopId",  shopIDTV.getText().toString());
 
                 startActivity(intent);
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 
@@ -182,19 +195,24 @@ public class RiderDeliver extends AppCompatActivity {
                                         buyerPhone.setText(getCustomerPhone);
                                         buyerRoute.setText(getBuyerRoute);
 
-                                        amount.setText(getItemsAmount);
+                                        amount.setText("₱ "+getItemsAmount);
 
-                                        if (getStatus.equals("Pending")) {
-                                            status.setText("Please respond to this order");
+                                        try{
+                                            if (getStatus.equals("Pending")) {
+                                                status.setText("Please respond to this order");
+                                            }
+                                            else if(getStatus.equals("Rider Accepted")){
+                                                status.setText("You can now proceed to deliver the products");
+                                            }
+                                            else if(getStatus.equals("Completed")){
+                                                status.setText("Order successfully delivered. Wait for another order");
+                                            }
+                                            showControls();
+                                            loadShopInfo(getShopID);
+                                        }catch(Exception e){
+
                                         }
-                                        else if(getStatus.equals("Rider Accepted")){
-                                            status.setText("You can now proceed to deliver the products");
-                                        }
-                                        else if(getStatus.equals("Completed")){
-                                            status.setText("Order successfully delivered. Wait for another order");
-                                        }
-                                        showControls();
-                                        loadShopInfo(getShopID);
+
 
 
                                     }
@@ -248,7 +266,7 @@ public class RiderDeliver extends AppCompatActivity {
     }
 
     private void acceptOrder() {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("driverOrder")) {
@@ -256,7 +274,7 @@ public class RiderDeliver extends AppCompatActivity {
                         if (snapshot.child("driverOrder").child(user).child("orders").hasChild(orderID.getText().toString())) {
                             Toast.makeText(RiderDeliver.this, orderID.getText().toString(), Toast.LENGTH_SHORT).show();
                             DatabaseReference myRef = databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString());
-                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            myRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -288,7 +306,7 @@ public class RiderDeliver extends AppCompatActivity {
     private void removeFromQueue() {
         DatabaseReference myRef = databaseReference.child("queue").child(buyerRoute.getText().toString());
         Query query = myRef.orderByKey().limitToFirst(1);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -385,7 +403,8 @@ public class RiderDeliver extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // send failed
             }
-        }){
+        })
+        {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 

@@ -262,6 +262,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         calendar.setTimeInMillis(Long.parseLong(orderTime));
                         String dateFormated = DateFormat.format("dd/MM/yyyy",calendar).toString();
                         buyerIdTv.setText(orderBy);
+                        amountTv.setText(orderCost);
                         if (orderStatus.equals("In Progress")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);
