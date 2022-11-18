@@ -112,7 +112,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/timeTitle"
                 android:gravity="center"
-                android:textSize="40sp"
+                android:textSize="38sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 />

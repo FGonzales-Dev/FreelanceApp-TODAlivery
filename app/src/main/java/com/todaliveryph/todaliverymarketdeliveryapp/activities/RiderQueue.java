@@ -1,9 +1,11 @@
 package com.todaliveryph.todaliverymarketdeliveryapp.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,12 +21,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class RiderQueue extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
     private FirebaseAuth firebaseAuth;
     String user, todaRoute;
-    Button onlineBtn,deliverBtn;
-    TextView routeTV, statusTV,timeTV;
+    Button onlineBtn, deliverBtn;
+    TextView routeTV, statusTV, timeTV;
     private ProgressDialog progressDialog;
 
     @Override
@@ -66,14 +71,37 @@ public class RiderQueue extends AppCompatActivity {
 
 
                 } else {
-                    onlineBtn.setBackgroundResource(R.color.colorPrimary);
 
-                    databaseReference.child("Users").child(firebaseAuth.getUid()).child("queue").setValue("Stand By");
-                    databaseReference.child("queue").child(String.valueOf(routeTV.getText())).child(String.valueOf(timeTV.getText())).removeValue();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RiderQueue.this);
+                    builder.setTitle("Queue");
+                    builder.setMessage("Are you sure you want to remove your queue?");
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
-                    Toast.makeText(RiderQueue.this, "Offline!", Toast.LENGTH_SHORT).show();
-                    timeTV.setText("");
-                    onlineBtn.setText("MAKE ME ONLINE");
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            onlineBtn.setBackgroundResource(R.color.colorPrimary);
+
+                            databaseReference.child("Users").child(firebaseAuth.getUid()).child("queue").setValue("Stand By");
+                            databaseReference.child("queue").child(String.valueOf(routeTV.getText())).child(String.valueOf(timeTV.getText())).removeValue();
+
+                            Toast.makeText(RiderQueue.this, "Offline!", Toast.LENGTH_SHORT).show();
+                            timeTV.setText("");
+                            onlineBtn.setText("MAKE ME ONLINE");
+
+
+                        }
+                    });
+
+                    builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
                 }
 
 
@@ -106,10 +134,11 @@ public class RiderQueue extends AppCompatActivity {
 
                             if (getStatus.equals("On Queue")) {
                                 onlineBtn.setBackgroundResource(R.color.green);
-                                timeTV.setText(getQueue);
+
                                 onlineBtn.setText("CURRENTLY ON QUEUE");
-                            }
-                            else{
+
+                                timeTV.setText(getQueue);
+                            } else {
                                 onlineBtn.setBackgroundResource(R.color.colorPrimary);
                                 timeTV.setText("");
                                 onlineBtn.setText("MAKE ME ONLINE");

@@ -104,6 +104,18 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 showNotification(orderId, sellerUid, riderUid, notificationTitle, notificationDescription, notificationType);
             }
         }
+        if (notificationType.equals("RiderCompleteOrder")) {
+            String riderUid = message.getData().get("riderUid");
+            String sellerUid = message.getData().get("sellerUid");
+            String orderId = message.getData().get("orderId");
+            String notificationTitle = message.getData().get("notificationTitle");
+            String notificationDescription = message.getData().get("notificationDescription");
+
+            if (firebaseUser != null && firebaseAuth.getUid().equals(riderUid)) {
+                //user is signed in and in same user which notif is sent
+                showNotification(orderId, sellerUid, riderUid, notificationTitle, notificationDescription, notificationType);
+            }
+        }
     }
 
     private void  showNotification (String orderId, String sellerUid, String buyerUid, String notificationTitle, String notificationDescription, String notificationType){
@@ -144,6 +156,11 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         }
         else if(notificationType.equals("RiderAccepted")){
+            intent = new Intent(this, SellerOrderMainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
+        else if(notificationType.equals("RiderCompleteOrder")){
             intent = new Intent(this, SellerOrderMainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
