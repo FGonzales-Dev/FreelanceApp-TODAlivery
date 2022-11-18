@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,6 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsSellerActivity;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.ShopDetailsActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 
 import java.util.Calendar;
@@ -25,7 +28,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     String getCustomerName, getCustomerPhone, getCustomerAddress, getShopId, getOrderId, getDate, getStatus, getAmount,getCustomerId;
     TextView customerNameTV,customerIDTV, customerAddressTV, customerPhoneTV, shopNameTV, shopAddressTV, shopPhoneTV, orderIdTV, dateTV, statusTV, amountTV, noteTV;
-
+    Button chatCustomer;
     String user;
 
     @Override
@@ -57,13 +60,20 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         amountTV = findViewById(R.id.amountTv);
         noteTV = findViewById(R.id.noteTV);
 
-
+        chatCustomer = findViewById(R.id.chatBtn);
 
 
         loadShopInfo();
         loadOrderInfo();
 
+        chatCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialPhone();
 
+
+            }
+        });
     }
 
     private void loadOrderInfo() {
@@ -87,9 +97,11 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         } else if (statusTV.getText().equals("Rider Accepted")) {
             noteTV.setVisibility(View.VISIBLE);
             statusTV.setTextColor(this.getResources().getColor(R.color.teal_200));
+            chatCustomer.setVisibility(View.VISIBLE);
         } else if (statusTV.getText().equals("Completed")) {
             noteTV.setVisibility(View.GONE);
             statusTV.setTextColor(this.getResources().getColor(R.color.green));
+            chatCustomer.setVisibility(View.GONE);
         } else {
             noteTV.setVisibility(View.VISIBLE);
         }
@@ -118,6 +130,13 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void dialPhone(){
+        Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
+        intent.putExtra("name", getCustomerName);
+        intent.putExtra("receiverID",getCustomerId);
+        startActivity(intent);
     }
 
 

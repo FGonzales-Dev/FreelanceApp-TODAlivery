@@ -278,6 +278,19 @@
             android:textColor="@color/black"
             />
 
+        <Button
+            android:id="@+id/chatBtn"
+            android:background="@color/colorPrimary"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:layout_below="@id/noteTV"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_centerHorizontal="true"
+            android:text="CHAT CUSTOMER" />
+
     </RelativeLayout>
 
 

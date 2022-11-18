@@ -39,7 +39,7 @@ public class RiderDeliver extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
-    Button acceptBtn, declineBtn,messageSellerBtn,qrBtn;
+    Button acceptBtn, declineBtn,qrBtn;
     ImageView backBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,6 @@ public class RiderDeliver extends AppCompatActivity {
 
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
-        messageSellerBtn = findViewById(R.id.contactSellerBtn);
         qrBtn = findViewById(R.id.qrBtn);
         backBtn = findViewById(R.id.backBTN);
         loadDelivery();
@@ -83,7 +82,6 @@ public class RiderDeliver extends AppCompatActivity {
                             Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
                         removeFromQueue();
                         prepareNotificationMessage();
-                        messageSellerBtn.setVisibility(View.VISIBLE);
                         acceptBtn.setVisibility(View.GONE);
                         declineBtn.setVisibility(View.GONE);
 
@@ -137,12 +135,6 @@ public class RiderDeliver extends AppCompatActivity {
             }
         });
 
-        messageSellerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialPhone();
-            }
-        });
 
         qrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -329,19 +321,16 @@ public class RiderDeliver extends AppCompatActivity {
     }
     private void showControls(){
         if ((status.getText().toString().equals("Please respond to this order"))){
-            messageSellerBtn.setVisibility(View.GONE);
             acceptBtn.setVisibility(View.VISIBLE);
             declineBtn.setVisibility(View.VISIBLE);
         }
         else if(status.getText().toString().equals("You can now proceed to deliver the products")){
-            messageSellerBtn.setVisibility(View.VISIBLE);
             qrBtn.setVisibility(View.VISIBLE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
         }
         else{
             qrBtn.setVisibility(View.GONE);
-            messageSellerBtn.setVisibility(View.GONE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
         }
@@ -349,16 +338,6 @@ public class RiderDeliver extends AppCompatActivity {
 
     }
 
-    private void dialPhone() {
-
-        Intent intent = new Intent(RiderDeliver.this, MessageActivity.class);
-        intent.putExtra("name", sellerName.getText().toString());
-        intent.putExtra("receiverID", shopIDTV.getText().toString());
-        startActivity(intent);
-
-
-
-    }
 
     private void prepareNotificationMessage(){
         //when seller changed order status, send notif to buyer
