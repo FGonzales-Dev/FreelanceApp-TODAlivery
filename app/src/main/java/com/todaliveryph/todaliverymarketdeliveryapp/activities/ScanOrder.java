@@ -251,7 +251,7 @@ public class ScanOrder extends AppCompatActivity {
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="Rider Update from "+driverName;
+        String NOTIFICATION_TITLE ="Rider "+driverName+" delivered the item(s)";
         String NOTIFICATION_MESSAGE =  "Rider successfully delivered the item(s)";
         String NOTIFICATION_TYPE = "RiderCompleteOrder";
 
