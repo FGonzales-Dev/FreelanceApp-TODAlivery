@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +29,7 @@ public class AdminUsersMainActivity extends AppCompatActivity {
 
 
     private ImageButton BTNback;
+
     private RecyclerView usersRv;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
@@ -47,6 +50,8 @@ public class AdminUsersMainActivity extends AppCompatActivity {
 
         BTNback = findViewById(R.id.BTNback);
         usersRv = findViewById(R.id.usersRv);
+
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         progressDialog = new ProgressDialog(this);
@@ -101,13 +106,16 @@ public class AdminUsersMainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
-                for (DataSnapshot ds: snapshot.getChildren()){
-                    String uid =""+ds.getRef().getKey();
+                for (DataSnapshot ds: snapshot.getChildren()) {
+                    String uid = "" + ds.getRef().getKey();
 
-                    ModelUser modelUser =  ds.getValue(ModelUser.class);
-                    if(modelUser.getAccountType().equals(userType)){
-                        //add to list
-                        userList.add(modelUser);
+                    ModelUser modelUser = ds.getValue(ModelUser.class);
+
+                    if (modelUser.getAccountType() != null) {
+                        if (modelUser.getAccountType().equals(userType)) {
+                            //add to list
+                            userList.add(modelUser);
+                        }
                     }
                 }
                 //setup adapter

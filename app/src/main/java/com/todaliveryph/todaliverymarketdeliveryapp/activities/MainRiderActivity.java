@@ -101,7 +101,8 @@ public class MainRiderActivity extends AppCompatActivity {
 
                             String name =""+ds.child("name").getValue();
                             String status = ""+ds.child("riderAccepted").getValue();
-                            if(status.equals("false")){
+                            String numberVerified = ""+ds.child("isNumberVerified").getValue();
+                            if(status.equals("false") || numberVerified.equals("false")){
                                 status = "Unverified";
                             }
                             else{
