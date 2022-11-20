@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,6 +116,11 @@ public class ScanOrder extends AppCompatActivity {
         scanAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                flash.setClickable(true);
+                camera.setClickable(true);
+                flash.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.fab));
+                camera.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.fab));
+                scanAgain.setVisibility(View.GONE);
                 zXingScannerView.startCamera(rearCamId);
                 initListener();
             }
@@ -232,6 +239,19 @@ public class ScanOrder extends AppCompatActivity {
     }
 
     private void completeOrderScan(String orderId){
+        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        final VibrationEffect vibrationEffect1;
+
+        // this is the only type of the vibration which requires system version Oreo (API 26)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            // this effect creates the vibration of default amplitude for 1000ms(1 sec)
+            vibrationEffect1 = VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE);
+            // it is safe to cancel other vibrations currently taking place
+            vibrator.cancel();
+            vibrator.vibrate(vibrationEffect1);
+        }
+
         if(orderId.equals(getOrderId)){
             databaseReference.child("Users").child(getShopId).child("Orders").child(orderId).child("orderStatus").setValue("Completed");
             databaseReference.child("driverOrder").child(user).child("orders").child(orderId).child("status").setValue("Completed");
@@ -240,6 +260,7 @@ public class ScanOrder extends AppCompatActivity {
             finish();
         }
         else{
+            noRecord();
             Toast.makeText(ScanOrder.this,"QR Code not found! Try again", Toast.LENGTH_LONG).show();
         }
 
@@ -305,6 +326,25 @@ public class ScanOrder extends AppCompatActivity {
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 
+    private void noRecord(){
+        flash.setClickable(false);
+        camera.setClickable(false);
+        flash.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorGray01));
+        camera.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorGray01));
+        scanAgain.setVisibility(View.VISIBLE);
+        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        final VibrationEffect vibrationEffect1;
+
+        // this is the only type of the vibration which requires system version Oreo (API 26)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            // this effect creates the vibration of default amplitude for 1000ms(1 sec)
+            vibrationEffect1 = VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE);
+            // it is safe to cancel other vibrations currently taking place
+            vibrator.cancel();
+            vibrator.vibrate(vibrationEffect1);
+        }
+    }
 
 
 }

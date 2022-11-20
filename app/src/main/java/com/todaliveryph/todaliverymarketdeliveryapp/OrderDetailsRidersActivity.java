@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsSellerActivity;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderDeliver;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.ScanOrder;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.ShopDetailsActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 
@@ -28,7 +30,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     String getCustomerName, getCustomerPhone, getCustomerAddress, getShopId, getOrderId, getDate, getStatus, getAmount,getCustomerId;
     TextView customerNameTV,customerIDTV, customerAddressTV, customerPhoneTV, shopNameTV, shopAddressTV, shopPhoneTV, orderIdTV, dateTV, statusTV, amountTV, noteTV;
-    Button chatCustomer;
+    Button chatCustomer,qrBtn;
     String user;
 
     @Override
@@ -61,7 +63,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         noteTV = findViewById(R.id.noteTV);
 
         chatCustomer = findViewById(R.id.chatBtn);
-
+        qrBtn = findViewById(R.id.qrBtn);
 
         loadShopInfo();
         loadOrderInfo();
@@ -74,6 +76,21 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
 
             }
         });
+
+        qrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(OrderDetailsRidersActivity.this, ScanOrder.class);
+
+                intent.putExtra("orderId", getOrderId);
+                intent.putExtra("shopId",  getShopId);
+
+                startActivity(intent);
+                finish();
+
+            }
+        });
     }
 
     private void loadOrderInfo() {
@@ -82,7 +99,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         customerPhoneTV.setText(getCustomerPhone);
         orderIdTV.setText(getOrderId);
         statusTV.setText(getStatus);
-        amountTV.setText(getAmount);
+        amountTV.setText("₱ "+getAmount);
 
 
         Calendar calendar = Calendar.getInstance();
@@ -98,10 +115,12 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
             noteTV.setVisibility(View.VISIBLE);
             statusTV.setTextColor(this.getResources().getColor(R.color.teal_200));
             chatCustomer.setVisibility(View.VISIBLE);
+            qrBtn.setVisibility(View.VISIBLE);
         } else if (statusTV.getText().equals("Completed")) {
             noteTV.setVisibility(View.GONE);
             statusTV.setTextColor(this.getResources().getColor(R.color.green));
             chatCustomer.setVisibility(View.GONE);
+            qrBtn.setVisibility(View.GONE);
         } else {
             noteTV.setVisibility(View.VISIBLE);
         }
