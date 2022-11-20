@@ -258,11 +258,11 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         String orderTime = ""+snapshot.child("orderTime").getValue();
                         String orderTo = ""+snapshot.child("orderTo").getValue();
                         String deliveryFee = ""+snapshot.child("deliveryFee").getValue();
-                        Toast.makeText(OrderDetailsSellerActivity.this, orderCost,Toast.LENGTH_SHORT).show();
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(Long.parseLong(orderTime));
                         String dateFormated = DateFormat.format("dd/MM/yyyy",calendar).toString();
                         buyerIdTv.setText(orderBy);
+                        amountTv.setText(orderCost);
                         if (orderStatus.equals("In Progress")){
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
                             btnAcceptOrder.setVisibility(View.INVISIBLE);

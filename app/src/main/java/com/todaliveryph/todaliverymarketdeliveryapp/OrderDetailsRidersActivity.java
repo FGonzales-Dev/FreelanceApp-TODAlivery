@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,6 +16,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsSellerActivity;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderDeliver;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.ScanOrder;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.ShopDetailsActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 
 import java.util.Calendar;
@@ -25,7 +30,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     String getCustomerName, getCustomerPhone, getCustomerAddress, getShopId, getOrderId, getDate, getStatus, getAmount,getCustomerId;
     TextView customerNameTV,customerIDTV, customerAddressTV, customerPhoneTV, shopNameTV, shopAddressTV, shopPhoneTV, orderIdTV, dateTV, statusTV, amountTV, noteTV;
-
+    Button chatCustomer,qrBtn;
     String user;
 
     @Override
@@ -57,13 +62,35 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         amountTV = findViewById(R.id.amountTv);
         noteTV = findViewById(R.id.noteTV);
 
-
-
+        chatCustomer = findViewById(R.id.chatBtn);
+        qrBtn = findViewById(R.id.qrBtn);
 
         loadShopInfo();
         loadOrderInfo();
 
+        chatCustomer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialPhone();
 
+
+            }
+        });
+
+        qrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(OrderDetailsRidersActivity.this, ScanOrder.class);
+
+                intent.putExtra("orderId", getOrderId);
+                intent.putExtra("shopId",  getShopId);
+
+                startActivity(intent);
+                finish();
+
+            }
+        });
     }
 
     private void loadOrderInfo() {
@@ -72,7 +99,7 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         customerPhoneTV.setText(getCustomerPhone);
         orderIdTV.setText(getOrderId);
         statusTV.setText(getStatus);
-        amountTV.setText(getAmount);
+        amountTV.setText("₱ "+getAmount);
 
 
         Calendar calendar = Calendar.getInstance();
@@ -87,9 +114,13 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         } else if (statusTV.getText().equals("Rider Accepted")) {
             noteTV.setVisibility(View.VISIBLE);
             statusTV.setTextColor(this.getResources().getColor(R.color.teal_200));
+            chatCustomer.setVisibility(View.VISIBLE);
+            qrBtn.setVisibility(View.VISIBLE);
         } else if (statusTV.getText().equals("Completed")) {
             noteTV.setVisibility(View.GONE);
             statusTV.setTextColor(this.getResources().getColor(R.color.green));
+            chatCustomer.setVisibility(View.GONE);
+            qrBtn.setVisibility(View.GONE);
         } else {
             noteTV.setVisibility(View.VISIBLE);
         }
@@ -120,70 +151,13 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
 
     }
 
-    private void dialPhone() {
-        databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot1) {
-
-                for (DataSnapshot dataSnapshot1 : snapshot1.getChildren()) {
-
-                    if (dataSnapshot1.hasChild("users_1") && dataSnapshot1.hasChild("users_2")) {
-
-                        final String getUserOne = dataSnapshot1.child("users_1").getValue(String.class);
-                        final String getUserTwo = dataSnapshot1.child("users_2").getValue(String.class);
-
-                        if ((getUserOne.equals(getCustomerId) || getUserTwo.equals(getCustomerId))
-                                && (getUserOne.equals(user) || getUserTwo.equals(user))) {
-                            final String getKey = dataSnapshot1.getKey();
-
-                            Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("mobile", getCustomerId);
-                            intent.putExtra("name", getCustomerName);
-                            intent.putExtra("profileImage", "");
-                            intent.putExtra("chat_key", getKey);
-
-                            startActivity(intent);
-                        } else{
-                            Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("mobile", getCustomerId);
-                            intent.putExtra("name", getCustomerName);
-                            intent.putExtra("profileImage", "");
-                            intent.putExtra("chat_key", "");
-
-                            startActivity(intent);
-                        }
-
-
-                    }
-
-
-                }
-
-                if (!snapshot1.hasChildren()) {
-                    Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
-
-                    intent.putExtra("mobile", getCustomerId);
-                    intent.putExtra("name", getCustomerName);
-                    intent.putExtra("profileImage", "");
-                    intent.putExtra("chat_key", "");
-                    startActivity(intent);
-                }
-
-
-
-
-
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+    private void dialPhone(){
+        Intent intent = new Intent(OrderDetailsRidersActivity.this, MessageActivity.class);
+        intent.putExtra("name", getCustomerName);
+        intent.putExtra("receiverID",getCustomerId);
+        startActivity(intent);
     }
+
+
 
 }

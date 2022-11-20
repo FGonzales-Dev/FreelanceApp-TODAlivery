@@ -37,6 +37,7 @@ public class RidersOrderMainActivity extends AppCompatActivity {
     String user;
     private ArrayList<ModelOrderDriver> ordersList;
     private AdapterOrderDriver adapterOrderDriver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +52,7 @@ public class RidersOrderMainActivity extends AppCompatActivity {
         progressDialog.setCanceledOnTouchOutside(false);
         user = firebaseAuth.getInstance().getUid();
         checkUser();
-
+        loadOrders();
         BTNback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,10 +65,10 @@ public class RidersOrderMainActivity extends AppCompatActivity {
 
     private void checkUser() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user ==null ){
+        if (user == null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
-        }else{
+        } else {
             loadMyInfo();
         }
     }
@@ -78,50 +79,38 @@ public class RidersOrderMainActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            loadOrders();
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
                 });
     }
+
     private void loadOrders() {
         ordersList = new ArrayList<>();
-
-        //get orders
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverOrder");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverOrder").child(user).child("orders");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ordersList.clear();
-                for (DataSnapshot ds: snapshot.getChildren()){
-                    String uid =""+ds.getRef().getKey();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String uid = "" + ds.getRef().getKey();
+                    if (snapshot.exists()) {
 
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverOrder").child(user).child("orders") ;
-                    ref.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if(snapshot.exists()){
-                                        for(DataSnapshot ds: snapshot.getChildren()){
-                                            ModelOrderDriver modelOrderDriver =  ds.getValue(ModelOrderDriver.class);
-                                            //add to list
-                                            ordersList.add(modelOrderDriver);
-                                        }
-                                        //setup adapter
-                                        adapterOrderDriver= new AdapterOrderDriver(RidersOrderMainActivity.this, ordersList);
-                                        //setup recycler view
-                                        ordersRv.setAdapter(adapterOrderDriver);
-                                    }
-                                }
+                        ModelOrderDriver modelOrderDriver = ds.getValue(ModelOrderDriver.class);
+                        //add to list
+                        ordersList.add(modelOrderDriver);
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
+                        //setup adapter
+                        adapterOrderDriver = new AdapterOrderDriver(RidersOrderMainActivity.this, ordersList);
+                        //setup recycler view
+                        ordersRv.setAdapter(adapterOrderDriver);
+                    }
                 }
             }
 

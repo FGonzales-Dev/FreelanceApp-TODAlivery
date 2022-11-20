@@ -60,7 +60,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
         try {
             Picasso.get().load(users.getProfileImage()).into(holder.profilePic);
         } catch (Exception e) {
-            holder.profilePic.setImageResource(R.drawable.user_icon);
+            holder.profilePic.setImageResource(R.drawable.user_icon_black);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +89,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private CircleImageView profilePic;
+        private CircleImageView profilePic,newMessage;
         private TextView name;
         private TextView lastMessage;
 
@@ -99,7 +99,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
             profilePic = itemView.findViewById(R.id.profilePic);
             name = itemView.findViewById(R.id.name);
             lastMessage = itemView.findViewById(R.id.lastMessage);
-
+            newMessage = itemView.findViewById(R.id.newMessage);
         }
     }
 
@@ -127,6 +127,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyViewHolder
                 }
                 if (!theLastMessage.equals("")) {
                     if (userLastMessage.equals(user)) {
+                        last_msg.setTextColor(Color.GRAY);
                         if (type.equals("img")) {
                             last_msg.setText("You sent an image");
                         } else {

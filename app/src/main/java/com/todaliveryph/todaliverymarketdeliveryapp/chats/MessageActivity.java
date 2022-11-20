@@ -146,8 +146,10 @@ public class MessageActivity extends AppCompatActivity {
                 getProfilePic = snapshot.child("profileImage").getValue(String.class);
                 try{
                     Picasso.get().load(getProfilePic).into(profilePic);
+
                 }catch (Exception e){
                     profilePic.setImageResource(R.drawable.user_icon);
+
                 }
             }
 

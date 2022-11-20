@@ -57,7 +57,7 @@ public class AdapterOrderShop extends RecyclerView.Adapter<AdapterOrderShop.Hold
         String orderTo  = modelOrderShop.getOrderTo();
 
         //load buyer/user info
-        loadUserInfo(modelOrderShop, holder);
+
 
         holder.amountTv.setText("Amount: ₱ "+orderCost);
         holder.statusTv.setText(orderStatus);
@@ -72,6 +72,11 @@ public class AdapterOrderShop extends RecyclerView.Adapter<AdapterOrderShop.Hold
         }
 
         //covert timestamp to date format
+        try{
+            loadUserInfo(modelOrderShop, holder);
+        }catch (Exception e){
+
+        }
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.parseLong(orderTime));

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +39,8 @@ public class RiderDeliver extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
     String user;
-    Button acceptBtn, declineBtn,messageSellerBtn,qrBtn;
-
+    Button acceptBtn, declineBtn,qrBtn;
+    ImageView backBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,11 +63,10 @@ public class RiderDeliver extends AppCompatActivity {
 
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
-        messageSellerBtn = findViewById(R.id.contactSellerBtn);
         qrBtn = findViewById(R.id.qrBtn);
-
+        backBtn = findViewById(R.id.backBTN);
         loadDelivery();
-
+        showControls();
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,7 +82,6 @@ public class RiderDeliver extends AppCompatActivity {
                             Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
                         removeFromQueue();
                         prepareNotificationMessage();
-                        messageSellerBtn.setVisibility(View.VISIBLE);
                         acceptBtn.setVisibility(View.GONE);
                         declineBtn.setVisibility(View.GONE);
 
@@ -115,7 +114,12 @@ public class RiderDeliver extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int which) {
                         removeFromQueue();
-                        //   Toast.makeText(RiderDeliver.this,"You declined the order, you need to queue again!",Toast.LENGTH_SHORT).show();
+                        databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).removeValue();
+                        databaseReference.child("Users").child(user).child("lastQueue").setValue("");
+                        databaseReference.child("Users").child(user).child("onQueue").setValue("");
+                        databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
+                        startActivity(new Intent(RiderDeliver.this, RiderQueue.class));
+                        finish();
                     }
                 });
 
@@ -131,12 +135,6 @@ public class RiderDeliver extends AppCompatActivity {
             }
         });
 
-        messageSellerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialPhone();
-            }
-        });
 
         qrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +145,13 @@ public class RiderDeliver extends AppCompatActivity {
                 intent.putExtra("shopId",  shopIDTV.getText().toString());
 
                 startActivity(intent);
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 
@@ -182,19 +187,24 @@ public class RiderDeliver extends AppCompatActivity {
                                         buyerPhone.setText(getCustomerPhone);
                                         buyerRoute.setText(getBuyerRoute);
 
-                                        amount.setText(getItemsAmount);
+                                        amount.setText("₱ "+getItemsAmount);
 
-                                        if (getStatus.equals("Pending")) {
-                                            status.setText("Please respond to this order");
+                                        try{
+                                            if (getStatus.equals("Pending")) {
+                                                status.setText("Please respond to this order");
+                                            }
+                                            else if(getStatus.equals("Rider Accepted")){
+                                                status.setText("You can now proceed to deliver the products");
+                                            }
+                                            else if(getStatus.equals("Completed")){
+                                                status.setText("Order successfully delivered. Wait for another order");
+                                            }
+                                            showControls();
+                                            loadShopInfo(getShopID);
+                                        }catch(Exception e){
+
                                         }
-                                        else if(getStatus.equals("Rider Accepted")){
-                                            status.setText("You can now proceed to deliver the products");
-                                        }
-                                        else if(getStatus.equals("Completed")){
-                                            status.setText("Order successfully delivered. Wait for another order");
-                                        }
-                                        showControls();
-                                        loadShopInfo(getShopID);
+
 
 
                                     }
@@ -248,7 +258,7 @@ public class RiderDeliver extends AppCompatActivity {
     }
 
     private void acceptOrder() {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("driverOrder")) {
@@ -256,7 +266,7 @@ public class RiderDeliver extends AppCompatActivity {
                         if (snapshot.child("driverOrder").child(user).child("orders").hasChild(orderID.getText().toString())) {
                             Toast.makeText(RiderDeliver.this, orderID.getText().toString(), Toast.LENGTH_SHORT).show();
                             DatabaseReference myRef = databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString());
-                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            myRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -288,7 +298,7 @@ public class RiderDeliver extends AppCompatActivity {
     private void removeFromQueue() {
         DatabaseReference myRef = databaseReference.child("queue").child(buyerRoute.getText().toString());
         Query query = myRef.orderByKey().limitToFirst(1);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -311,19 +321,16 @@ public class RiderDeliver extends AppCompatActivity {
     }
     private void showControls(){
         if ((status.getText().toString().equals("Please respond to this order"))){
-            messageSellerBtn.setVisibility(View.GONE);
             acceptBtn.setVisibility(View.VISIBLE);
             declineBtn.setVisibility(View.VISIBLE);
         }
         else if(status.getText().toString().equals("You can now proceed to deliver the products")){
-            messageSellerBtn.setVisibility(View.VISIBLE);
             qrBtn.setVisibility(View.VISIBLE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
         }
         else{
             qrBtn.setVisibility(View.GONE);
-            messageSellerBtn.setVisibility(View.GONE);
             acceptBtn.setVisibility(View.GONE);
             declineBtn.setVisibility(View.GONE);
         }
@@ -331,16 +338,6 @@ public class RiderDeliver extends AppCompatActivity {
 
     }
 
-    private void dialPhone() {
-
-        Intent intent = new Intent(RiderDeliver.this, MessageActivity.class);
-        intent.putExtra("name", sellerName.getText().toString());
-        intent.putExtra("receiverID", shopIDTV.getText().toString());
-        startActivity(intent);
-
-
-
-    }
 
     private void prepareNotificationMessage(){
         //when seller changed order status, send notif to buyer
@@ -385,7 +382,8 @@ public class RiderDeliver extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // send failed
             }
-        }){
+        })
+        {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 

@@ -220,6 +220,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/noteTV1"
                 android:textColor="@color/white"
+                android:visibility="gone"
                 android:layout_centerHorizontal="true"
                 android:text="INFORM DRIVER" />
 

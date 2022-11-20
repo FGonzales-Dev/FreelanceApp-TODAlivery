@@ -35,10 +35,11 @@ public class OrderDriver extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
     FirebaseAuth firebaseAuth;
-    String getRoute,getOrderID,getCustomerName,getOrderAmount,getCustomerAddress,getCustomerID,getCustomerPhone;
-    TextView driverName, driverNumber, driverStatus, driverRoute,driverStatusNote,driverID;
+    String getRoute, getOrderID, getCustomerName, getOrderAmount, getCustomerAddress, getCustomerID, getCustomerPhone;
+    TextView driverName, driverNumber, driverStatus, driverRoute, driverStatusNote, driverID;
     Button informBtn;
     String user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,12 +48,12 @@ public class OrderDriver extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getUid();
         getRoute = getIntent().getStringExtra("route");
-        getOrderID= getIntent().getStringExtra("orderID");
-        getCustomerName= getIntent().getStringExtra("name");
-        getCustomerAddress= getIntent().getStringExtra("address");
-        getCustomerPhone= getIntent().getStringExtra("phone");
-        getOrderAmount= getIntent().getStringExtra("amount");
-        getCustomerID= getIntent().getStringExtra("buyerID");
+        getOrderID = getIntent().getStringExtra("orderID");
+        getCustomerName = getIntent().getStringExtra("name");
+        getCustomerAddress = getIntent().getStringExtra("address");
+        getCustomerPhone = getIntent().getStringExtra("phone");
+        getOrderAmount = getIntent().getStringExtra("amount");
+        getCustomerID = getIntent().getStringExtra("buyerID");
 
         driverName = findViewById(R.id.driverNameTV);
         driverNumber = findViewById(R.id.driverNumberTV);
@@ -65,18 +66,14 @@ public class OrderDriver extends AppCompatActivity {
         informBtn = findViewById(R.id.informBtn);
 
         getFirstQueue();
-        if (driverName.getText().toString().equals("No driver yet")){
-            informBtn.setVisibility(View.GONE);
-        }
-        if(driverStatus.getText().equals("Driver Accepted")){
-            informBtn.setText("CONTACT DRIVER");
-        }
+        controlButton();
+
         informBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 driverStatus.setText("Pending");
                 driverStatusNote.setVisibility(View.VISIBLE);
-                Toast.makeText(OrderDriver.this, "Rider has been informed! Wait for respond",Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderDriver.this, "Rider has been informed! Wait for respond", Toast.LENGTH_SHORT).show();
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("shopId").setValue(firebaseAuth.getUid());
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderId").setValue(getOrderID);
                 databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerName").setValue(getCustomerName);
@@ -96,7 +93,7 @@ public class OrderDriver extends AppCompatActivity {
     private void getFirstQueue() {
         DatabaseReference myRef = databaseReference.child("queue").child(getRoute);
         Query query = myRef.orderByKey().limitToFirst(1);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -119,6 +116,7 @@ public class OrderDriver extends AppCompatActivity {
                                             driverRoute.setText(route);
                                             driverID.setText(getDriverID);
                                             checkStatus();
+                                            controlButton();
                                         }
 
                                         @Override
@@ -126,10 +124,16 @@ public class OrderDriver extends AppCompatActivity {
 
                                         }
                                     });
-
-
                         }
                     }
+                }else{
+                    driverName.setText("No driver yet");
+                    driverNumber.setText("Empty");
+                    driverRoute.setText("Empty");
+                    driverID.setText("");
+                    driverStatus.setText("");
+                    driverStatusNote.setText("");
+                    controlButton();
                 }
             }
 
@@ -140,16 +144,17 @@ public class OrderDriver extends AppCompatActivity {
         });
 
     }
-    private void checkStatus(){
 
+    private void checkStatus() {
         DatabaseReference myRef = databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID);
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChildren()){
-                    if(dataSnapshot.child("status").getValue().equals("Pending")){
+                if (dataSnapshot.hasChildren()) {
+                    if (dataSnapshot.child("status").getValue().equals("Pending")) {
                         driverStatus.setText("Pending");
                         driverStatusNote.setVisibility(View.VISIBLE);
+
 
                     }
                 }
@@ -161,38 +166,49 @@ public class OrderDriver extends AppCompatActivity {
                 throw databaseError.toException();
             }
         });
-
-
     }
 
-    private void prepareNotificationMessage(){
+    private void controlButton() {
+        if (!driverName.getText().toString().equals("No driver yet")) {
+            informBtn.setVisibility(View.VISIBLE);
+        }
+        else{
+            informBtn.setVisibility(View.GONE);
+        }
+        if (driverStatus.getText().equals("Driver Accepted")) {
+            informBtn.setText("CONTACT DRIVER");
+        }
+    }
+
+    private void prepareNotificationMessage() {
         //when seller changed order status, send notif to buyer
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="New order in your location ";
-        String NOTIFICATION_MESSAGE =  getOrderID;
+        String NOTIFICATION_TITLE = "New order in your location ";
+        String NOTIFICATION_MESSAGE = getOrderID;
         String NOTIFICATION_TYPE = "Rider";
 
         JSONObject notificationJo = new JSONObject();
         JSONObject notificationBodyJo = new JSONObject();
         try {
             // mga sinesend
-            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
-            notificationBodyJo.put("riderUid",driverID.getText().toString());
-            notificationBodyJo.put("sellerUid",firebaseAuth.getUid());
-            notificationBodyJo.put("orderId",getOrderID);
-            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid", driverID.getText().toString());
+            notificationBodyJo.put("sellerUid", firebaseAuth.getUid());
+            notificationBodyJo.put("orderId", getOrderID);
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage", NOTIFICATION_MESSAGE);
             //saan i sesend
-            notificationJo.put("to",NOTIFICATION_TOPIC);
-            notificationJo.put("data",notificationBodyJo);
-        }catch (Exception e){
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo);
     }
+
     private void sendFcmNotification(JSONObject notificationJo) {
 
         //send volley request (dependencies)
@@ -208,14 +224,14 @@ public class OrderDriver extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // send failed
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 //put required headers
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type","application/json");
-                headers.put("Authorization","key="+Constants.FCM_KEY);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key=" + Constants.FCM_KEY);
                 return headers;
             }
         };
@@ -223,7 +239,6 @@ public class OrderDriver extends AppCompatActivity {
         //Enque volley request
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
-
 
 
 }

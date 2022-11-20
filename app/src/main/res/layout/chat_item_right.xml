@@ -20,12 +20,15 @@
             android:text="Receiver's message"/>
         <ImageView
             android:id="@+id/showImgMessage"
-            android:padding="10dp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/my_msg_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:padding="40dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/my_msg_back"
+            android:visibility="gone"
+           />
 
 
     </RelativeLayout>
