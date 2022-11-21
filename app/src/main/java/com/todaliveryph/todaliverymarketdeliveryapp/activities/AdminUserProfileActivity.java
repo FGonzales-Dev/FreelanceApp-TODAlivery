@@ -95,6 +95,7 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void unused) {
                                 // Updated
+                                prepareNotificationMessageDecline();
                                 progressDialog.dismiss();
                                 Toast.makeText(AdminUserProfileActivity.this, "Successfully Updated", Toast.LENGTH_SHORT).show();
                             }
@@ -123,7 +124,7 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                             public void onSuccess(Void unused) {
                                 // Updated
                                 progressDialog.dismiss();
-                                prepareNotificationMessage();
+                                prepareNotificationMessageApproved();
                                 Toast.makeText(AdminUserProfileActivity.this, "Successfully Updated", Toast.LENGTH_SHORT).show();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -225,14 +226,43 @@ public class AdminUserProfileActivity extends AppCompatActivity {
         finish();
     }
 
-    private void prepareNotificationMessage(){
+    private void prepareNotificationMessageApproved(){
         //when seller changed order status, send notif to buyer
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
         String NOTIFICATION_TITLE ="ID Verification";
-        String NOTIFICATION_MESSAGE =  "ID Verification Update(s)";
+        String NOTIFICATION_MESSAGE =  "ID Verification Approved";
+        String NOTIFICATION_TYPE = "IdVerification";
+
+        JSONObject notificationJo = new JSONObject();
+        JSONObject notificationBodyJo = new JSONObject();
+        try {
+            // mga sinesend
+            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid",uid);
+            notificationBodyJo.put("adminUid",currentUser);
+            notificationBodyJo.put("message","ID Verification Update");
+            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            //saan i sesend
+            notificationJo.put("to",NOTIFICATION_TOPIC);
+            notificationJo.put("data",notificationBodyJo);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        sendFcmNotification(notificationJo);
+    }
+
+    private void prepareNotificationMessageDecline(){
+        //when seller changed order status, send notif to buyer
+
+        //prepare data  for notif
+
+        String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
+        String NOTIFICATION_TITLE ="ID Verification";
+        String NOTIFICATION_MESSAGE =  "ID Verification Declined";
         String NOTIFICATION_TYPE = "IdVerification";
 
         JSONObject notificationJo = new JSONObject();
