@@ -123,6 +123,7 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                             public void onSuccess(Void unused) {
                                 // Updated
                                 progressDialog.dismiss();
+                                prepareNotificationMessage();
                                 Toast.makeText(AdminUserProfileActivity.this, "Successfully Updated", Toast.LENGTH_SHORT).show();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
