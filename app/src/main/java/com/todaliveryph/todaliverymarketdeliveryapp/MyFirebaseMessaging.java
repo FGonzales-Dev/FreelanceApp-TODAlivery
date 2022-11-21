@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.todaliveryph.todaliverymarketdeliveryapp.activities.MainRiderActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsSellerActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.OrderDetailsUsersActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.activities.RiderQueue;
@@ -116,6 +117,18 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 showNotification(orderId, sellerUid, riderUid, notificationTitle, notificationDescription, notificationType);
             }
         }
+        if (notificationType.equals("IdVerification")) {
+            String riderUid = message.getData().get("riderUid");
+            String adminUid = message.getData().get("adminUid");
+            String chat = message.getData().get("message");
+            String notificationTitle = message.getData().get("notificationTitle");
+            String notificationDescription = message.getData().get("notificationMessage"); // or known as notif message
+
+            if (firebaseUser != null && firebaseAuth.getUid().equals(riderUid)) {
+                //user is signed in and in same user which notif is sent
+                showNotification(chat, adminUid, riderUid, notificationTitle, notificationDescription, notificationType);
+            }
+        }
     }
 
     private void  showNotification (String orderId, String sellerUid, String buyerUid, String notificationTitle, String notificationDescription, String notificationType){
@@ -162,6 +175,11 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         }
         else if(notificationType.equals("RiderCompleteOrder")){
             intent = new Intent(this, SellerOrderMainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
+        else if(notificationType.equals("IdVerification")){
+            intent = new Intent(this, MainRiderActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         }

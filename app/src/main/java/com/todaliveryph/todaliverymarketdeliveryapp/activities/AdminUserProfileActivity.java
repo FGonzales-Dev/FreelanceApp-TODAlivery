@@ -15,6 +15,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -29,14 +34,18 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
 import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelUser;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.Map;
 
 public class AdminUserProfileActivity extends AppCompatActivity {
 
-    String uid;
+    String uid,currentUser;
     private TextView TVfrontname, TVfname, TVphone, TVaddress;
     private ImageView picProfile,id_image;
     private ProgressDialog progressDialog;
@@ -68,7 +77,7 @@ public class AdminUserProfileActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
-
+        currentUser = firebaseAuth.getCurrentUser().getUid();
         checkUser();
 
 
@@ -141,7 +150,6 @@ public class AdminUserProfileActivity extends AppCompatActivity {
         backBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AdminUserProfileActivity.this, AdminUsersMainActivity.class));
                 finish();
             }
         });
@@ -213,8 +221,68 @@ public class AdminUserProfileActivity extends AppCompatActivity {
     }
 
     public void onBackPressed () {
-        startActivity(new Intent(AdminUserProfileActivity.this, AdminUsersMainActivity.class));
         finish();
     }
+
+    private void prepareNotificationMessage(){
+        //when seller changed order status, send notif to buyer
+
+        //prepare data  for notif
+
+        String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
+        String NOTIFICATION_TITLE ="ID Verification";
+        String NOTIFICATION_MESSAGE =  "ID Verification Update(s)";
+        String NOTIFICATION_TYPE = "IdVerification";
+
+        JSONObject notificationJo = new JSONObject();
+        JSONObject notificationBodyJo = new JSONObject();
+        try {
+            // mga sinesend
+            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid",uid);
+            notificationBodyJo.put("adminUid",currentUser);
+            notificationBodyJo.put("message","ID Verification Update");
+            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            //saan i sesend
+            notificationJo.put("to",NOTIFICATION_TOPIC);
+            notificationJo.put("data",notificationBodyJo);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        sendFcmNotification(notificationJo);
+    }
+    private void sendFcmNotification(JSONObject notificationJo) {
+
+        //send volley request (dependencies)
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // send failed
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                //put required headers
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type","application/json");
+                headers.put("Authorization","key="+Constants.FCM_KEY);
+                return headers;
+            }
+        };
+
+        //Enque volley request
+        Volley.newRequestQueue(this).add(jsonObjectRequest);
+    }
+
 
 } // public class closing

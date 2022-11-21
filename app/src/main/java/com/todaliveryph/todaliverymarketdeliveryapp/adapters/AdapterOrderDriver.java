@@ -59,7 +59,7 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
         String customerId = modelOrderDriver.getCustomerId();
         //get shop info
      //  loadShopInfo(modelOrderDriver, holder);
-        holder.shopNameTv.setText(customerName);
+        holder.customerNameTv.setText(customerName);
         holder.amountTv.setText("Amount: "+itemsAmount);
         holder.statusTv.setText(status);
         holder.orderIdTv.setText("Order ID: "+orderId);
@@ -118,7 +118,7 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.exists()){
                             String shopName = ""+snapshot.child("shopName").getValue();
-                            holder.shopNameTv.setText(shopName);
+                            holder.customerNameTv.setText(shopName);
                         }
 
                     }
@@ -137,13 +137,13 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
 
     class HolderOrderDriver extends RecyclerView.ViewHolder{
 
-        private TextView orderIdTv,shopNameTv,dateTv,amountTv,statusTv;
+        private TextView orderIdTv,customerNameTv,dateTv,amountTv,statusTv;
 
         public HolderOrderDriver(@NonNull View itemView) {
             super(itemView);
 
             orderIdTv = itemView.findViewById(R.id.orderIdTv);
-            shopNameTv = itemView.findViewById(R.id.shopNameTv);
+            customerNameTv = itemView.findViewById(R.id.shopNameTv);
             dateTv = itemView.findViewById(R.id.dateTv);
             amountTv = itemView.findViewById(R.id.amountTv);
             statusTv = itemView.findViewById(R.id.statusTv);
