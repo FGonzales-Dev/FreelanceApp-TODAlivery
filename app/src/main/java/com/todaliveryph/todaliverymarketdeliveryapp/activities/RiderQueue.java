@@ -70,7 +70,7 @@ public class RiderQueue extends AppCompatActivity {
                     timeTV.setText(currentTimestamp);
 
 
-                } else {
+                } else if(onlineBtn.getText().equals("CURRENTLY ON QUEUE")){
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(RiderQueue.this);
                     builder.setTitle("Queue");

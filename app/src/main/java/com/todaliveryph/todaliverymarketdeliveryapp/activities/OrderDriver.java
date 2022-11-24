@@ -2,8 +2,12 @@ package com.todaliveryph.todaliverymarketdeliveryapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,7 +42,7 @@ public class OrderDriver extends AppCompatActivity {
     String getRoute, getOrderID, getCustomerName, getOrderAmount, getCustomerAddress, getCustomerID, getCustomerPhone;
     TextView driverName, driverNumber, driverStatus, driverRoute, driverStatusNote, driverID;
     Button informBtn;
-    String user;
+    String user,getRiderPendingOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,26 +75,35 @@ public class OrderDriver extends AppCompatActivity {
         informBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                driverStatus.setText("Pending");
-                driverStatusNote.setVisibility(View.VISIBLE);
-                Toast.makeText(OrderDriver.this, "Rider has been informed! Wait for respond", Toast.LENGTH_SHORT).show();
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("shopId").setValue(firebaseAuth.getUid());
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderId").setValue(getOrderID);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerName").setValue(getCustomerName);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerAddress").setValue(getCustomerAddress);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("itemsAmount").setValue(getOrderAmount);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerPhone").setValue(getCustomerPhone);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("status").setValue("Pending");
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("route").setValue(getRoute);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderTime").setValue(getOrderID);
-                databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerId").setValue(getCustomerID);
-                prepareNotificationMessage();
+                if(getRiderPendingOrder.equals("false")){
+                    driverStatus.setText("Pending");
+                    driverStatusNote.setVisibility(View.VISIBLE);
+                    Toast.makeText(OrderDriver.this, "Rider has been informed! Wait for respond", Toast.LENGTH_SHORT).show();
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("shopId").setValue(firebaseAuth.getUid());
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderId").setValue(getOrderID);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerName").setValue(getCustomerName);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerAddress").setValue(getCustomerAddress);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("itemsAmount").setValue(getOrderAmount);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerPhone").setValue(getCustomerPhone);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("status").setValue("Pending");
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("route").setValue(getRoute);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("orderTime").setValue(getOrderID);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerId").setValue(getCustomerID);
+                    databaseReference.child("Users").child(driverID.getText().toString()).child("pendingOrder").setValue("true");
+                    prepareNotificationMessage();
+                }
+                else{
+                    vibrate();
+                    Toast.makeText(OrderDriver.this, "Rider has pending order. Wait until the queue refreshed!", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
     }
 
     private void getFirstQueue() {
+        getRiderPendingOrder ="";
         DatabaseReference myRef = databaseReference.child("queue").child(getRoute);
         Query query = myRef.orderByKey().limitToFirst(1);
         query.addValueEventListener(new ValueEventListener() {
@@ -110,7 +123,8 @@ public class OrderDriver extends AppCompatActivity {
                                             String name = "" + snapshot.child("name").getValue();
                                             String phone = "" + snapshot.child("phone").getValue();
                                             String route = "" + snapshot.child("Toda").getValue();
-
+                                            String pendingRiderOrder = "" + snapshot.child("pendingOrder").getValue();
+                                            getRiderPendingOrder = pendingRiderOrder;
                                             driverName.setText(name);
                                             driverNumber.setText(phone);
                                             driverRoute.setText(route);
@@ -154,8 +168,9 @@ public class OrderDriver extends AppCompatActivity {
                     if (dataSnapshot.child("status").getValue().equals("Pending")) {
                         driverStatus.setText("Pending");
                         driverStatusNote.setVisibility(View.VISIBLE);
-
-
+                    }
+                    if (dataSnapshot.child("status").getValue().equals("Rider Accepted")) {
+                        finish();
                     }
                 }
 
@@ -239,6 +254,20 @@ public class OrderDriver extends AppCompatActivity {
         //Enque volley request
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
+    private void vibrate(){
 
+        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        final VibrationEffect vibrationEffect1;
+
+        // this is the only type of the vibration which requires system version Oreo (API 26)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            // this effect creates the vibration of default amplitude for 1000ms(1 sec)
+            vibrationEffect1 = VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE);
+            // it is safe to cancel other vibrations currently taking place
+            vibrator.cancel();
+            vibrator.vibrate(vibrationEffect1);
+        }
+    }
 
 }

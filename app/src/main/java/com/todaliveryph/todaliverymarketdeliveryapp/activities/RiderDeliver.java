@@ -65,8 +65,10 @@ public class RiderDeliver extends AppCompatActivity {
         declineBtn = findViewById(R.id.declineBtn);
         qrBtn = findViewById(R.id.qrBtn);
         backBtn = findViewById(R.id.backBTN);
+
         loadDelivery();
         showControls();
+
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,7 +81,7 @@ public class RiderDeliver extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         acceptOrder();
-                            Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
                         removeFromQueue();
                         prepareNotificationMessage();
                         acceptBtn.setVisibility(View.GONE);
@@ -114,10 +116,12 @@ public class RiderDeliver extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int which) {
                         removeFromQueue();
+                        prepareNotificationMessageDecline();
                         databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).removeValue();
                         databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                         databaseReference.child("Users").child(user).child("onQueue").setValue("");
                         databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
+                        databaseReference.child("Users").child(user).child("pendingOrder").setValue("false");
                         startActivity(new Intent(RiderDeliver.this, RiderQueue.class));
                         finish();
                     }
@@ -140,11 +144,10 @@ public class RiderDeliver extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(RiderDeliver.this, ScanOrder.class);
-
                 intent.putExtra("orderId", orderID.getText().toString());
                 intent.putExtra("shopId",  shopIDTV.getText().toString());
-
                 startActivity(intent);
+
             }
         });
 
@@ -264,7 +267,7 @@ public class RiderDeliver extends AppCompatActivity {
                 if (snapshot.hasChild("driverOrder")) {
                     if (snapshot.child("driverOrder").hasChild(user)) {
                         if (snapshot.child("driverOrder").child(user).child("orders").hasChild(orderID.getText().toString())) {
-                            Toast.makeText(RiderDeliver.this, orderID.getText().toString(), Toast.LENGTH_SHORT).show();
+                     //       Toast.makeText(RiderDeliver.this, orderID.getText().toString(), Toast.LENGTH_SHORT).show();
                             DatabaseReference myRef = databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString());
                             myRef.addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -275,6 +278,7 @@ public class RiderDeliver extends AppCompatActivity {
                                     databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("onQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
+                                    databaseReference.child("Users").child(user).child("pendingOrder").setValue("false");
                                     databaseReference.child("Users").child(shopIDTV.getText().toString()).child("Orders").child(orderID.getText().toString()).child("orderStatus").setValue("Rider Accepted");
                                 }
 
@@ -347,6 +351,35 @@ public class RiderDeliver extends AppCompatActivity {
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
         String NOTIFICATION_TITLE ="Rider Update from "+driverName.getText().toString();
         String NOTIFICATION_MESSAGE =  "Rider Accepted the order";
+        String NOTIFICATION_TYPE = "RiderAccepted";
+
+        JSONObject notificationJo = new JSONObject();
+        JSONObject notificationBodyJo = new JSONObject();
+        try {
+            // mga sinesend
+            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid",shopIDTV.getText().toString());
+            notificationBodyJo.put("sellerUid",user);
+            notificationBodyJo.put("orderId","Rider Accepted the order");
+            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            //saan i sesend
+            notificationJo.put("to",NOTIFICATION_TOPIC);
+            notificationJo.put("data",notificationBodyJo);
+        }catch (Exception e){
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        sendFcmNotification(notificationJo);
+    }
+
+    private void prepareNotificationMessageDecline(){
+        //when seller changed order status, send notif to buyer
+
+        //prepare data  for notif
+
+        String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
+        String NOTIFICATION_TITLE ="Rider Update from "+driverName.getText().toString();
+        String NOTIFICATION_MESSAGE =  "Rider Declined. Find new Rider!";
         String NOTIFICATION_TYPE = "RiderAccepted";
 
         JSONObject notificationJo = new JSONObject();

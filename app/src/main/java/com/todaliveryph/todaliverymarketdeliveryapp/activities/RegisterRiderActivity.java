@@ -342,9 +342,7 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
             hashMap.put("phone",""+phoneNumber);
             hashMap.put("otp",otp);
             hashMap.put("address",""+address);
-
             hashMap.put("queue","");
-
             hashMap.put("Toda",spinner.getSelectedItem());
             // hashMap.put("latitude",""+latitude);
             // hashMap.put("longitude",""+longitude);
@@ -353,6 +351,7 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
             hashMap.put("online","true");
             hashMap.put("riderAccepted","false");
             hashMap.put("isNumberVerified","false");
+            hashMap.put("pendingOrder","false");
             hashMap.put("profileImage","");
 
             //Final setup: saving to database
@@ -421,6 +420,7 @@ public class RegisterRiderActivity extends AppCompatActivity /*implements Locati
                                 hashMap.put("online","true");
                                 hashMap.put("riderAccepted","false");
                                 hashMap.put("isNumberVerified","false");
+                                hashMap.put("pendingOrder","false");
                                 hashMap.put("profileImage",""+downloadImageUri); ///convert image to url
 
                                 //Final setup: saving to database

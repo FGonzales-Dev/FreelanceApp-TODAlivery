@@ -42,10 +42,10 @@ import java.util.Map;
 
 public class OrderDetailsSellerActivity extends AppCompatActivity {
 
-    private ImageButton backBtn ,editBtn;
-    private TextView orderIdTv, dateTv, orderStatusTv , nameTv, phoneTv,buyerIdTv,
-    totalItemsTv, amountTv, addressTv,routeTv;
-    private Button btnDeclineOrder,btnAcceptOrder,selectDriver;
+    private ImageButton backBtn, editBtn;
+    private TextView orderIdTv, dateTv, orderStatusTv, nameTv, phoneTv, buyerIdTv,
+            totalItemsTv, amountTv, addressTv, routeTv;
+    private Button btnDeclineOrder, btnAcceptOrder, selectDriver;
     private RecyclerView itemsRv;
     String orderId, orderBy;
     private FirebaseAuth firebaseAuth;
@@ -72,7 +72,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         btnDeclineOrder = findViewById(R.id.btnDeclineOrder);
         btnAcceptOrder = findViewById(R.id.btnAcceptOrder);
         selectDriver = findViewById(R.id.selectDriverBtn);
-        routeTv= findViewById(R.id.driverRouteTv);
+        routeTv = findViewById(R.id.driverRouteTv);
         buyerIdTv = findViewById(R.id.buyerIDTv);
 
         orderId = getIntent().getStringExtra("orderId");
@@ -87,7 +87,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         selectDriver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(OrderDetailsSellerActivity.this,OrderDriver.class);
+                Intent intent = new Intent(OrderDetailsSellerActivity.this, OrderDriver.class);
                 intent.putExtra("route", routeTv.getText().toString());
                 intent.putExtra("orderID", orderIdTv.getText().toString());
                 intent.putExtra("address", addressTv.getText().toString());
@@ -104,32 +104,53 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Toast.makeText(OrderDetailsSellerActivity.this, "Order Accepted", Toast.LENGTH_SHORT);
-                //wala pa pero after nito dapat pupunta na sa queing stage
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(OrderDetailsSellerActivity.this);
+                builder.setTitle("Delivery");
+                builder.setMessage("Are you sure you want to accept this order? The buyer will now be notified");
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("orderStatus", ""+"In Progress");
+                    public void onClick(DialogInterface dialog, int which) {
 
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-                ref.child(firebaseAuth.getUid()).child("Orders").child(orderId)
-                        .updateChildren(hashMap)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
+                        Toast.makeText(OrderDetailsSellerActivity.this, "Order Accepted", Toast.LENGTH_SHORT);
+                        //wala pa pero after nito dapat pupunta na sa queing stage
 
-                                String message =  "Order is now "+"In Progress";
-                                Toast.makeText(OrderDetailsSellerActivity.this, message , Toast.LENGTH_SHORT).show();
-                                prepareNotificationMessage(orderId,message);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(OrderDetailsSellerActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                btnAcceptOrder.setVisibility(View.GONE);
-                selectDriver.setVisibility(View.VISIBLE);
-                //*******************************
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("orderStatus", "" + "In Progress");
+
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+                        ref.child(firebaseAuth.getUid()).child("Orders").child(orderId)
+                                .updateChildren(hashMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+
+                                        String message = "Order is now " + "In Progress";
+                                        Toast.makeText(OrderDetailsSellerActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        prepareNotificationMessage(orderId, message);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(OrderDetailsSellerActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        btnAcceptOrder.setVisibility(View.GONE);
+                        btnDeclineOrder.setVisibility(View.GONE);
+                        selectDriver.setVisibility(View.VISIBLE);
+                        //*******************************
+                    }
+
+                });
+
+                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+                androidx.appcompat.app.AlertDialog alert = builder.create();
+                alert.show();
             }
 
         });
@@ -148,7 +169,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("orderStatus", ""+"Cancelled");
+                        hashMap.put("orderStatus", "" + "Cancelled");
 
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
                         ref.child(firebaseAuth.getUid()).child("Orders").child(orderId)
@@ -157,17 +178,17 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void unused) {
 
-                                        String message =  "Order is now "+"Cancelled";
-                                        Toast.makeText(OrderDetailsSellerActivity.this, message , Toast.LENGTH_SHORT).show();
-                                        prepareNotificationMessage(orderId,message);
+                                        String message = "Order is now " + "Cancelled";
+                                        Toast.makeText(OrderDetailsSellerActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        prepareNotificationMessage(orderId, message);
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(OrderDetailsSellerActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(OrderDetailsSellerActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                       //*/**/*/*/*/*/
+                        //*/**/*/*/*/*/
                     }
                 });
 
@@ -207,7 +228,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
     }// closing create bundle class
 
     private void editOrderStatusDialog() {
-        String [] options = {"In Progress", "Completed", "Cancelled"};
+        String[] options = {"In Progress", "Completed", "Cancelled"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit Order Status")
@@ -219,10 +240,11 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                     }
                 }).show();
     }
+
     private void editOrderStatus(String selectedOption) {
 
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("orderStatus", ""+selectedOption);
+        hashMap.put("orderStatus", "" + selectedOption);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(firebaseAuth.getUid()).child("Orders").child(orderId)
@@ -231,58 +253,58 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void unused) {
 
-                        String message =  "Order is now "+selectedOption;
-                        Toast.makeText(OrderDetailsSellerActivity.this, message , Toast.LENGTH_SHORT).show();
-                        prepareNotificationMessage(orderId,message);
+                        String message = "Order is now " + selectedOption;
+                        Toast.makeText(OrderDetailsSellerActivity.this, message, Toast.LENGTH_SHORT).show();
+                        prepareNotificationMessage(orderId, message);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(OrderDetailsSellerActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(OrderDetailsSellerActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
     }
+
     private void loadOrderDetails() {
 
-        DatabaseReference ref =FirebaseDatabase.getInstance().getReference("Users");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(firebaseAuth.getUid()).child("Orders").child(orderId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        String orderBy = ""+snapshot.child("orderBy").getValue();
-                        String orderCost = ""+snapshot.child("orderCost").getValue();
-                        String orderId = ""+snapshot.child("orderId").getValue();
-                        String orderStatus = ""+snapshot.child("orderStatus").getValue();
-                        String orderTime = ""+snapshot.child("orderTime").getValue();
-                        String orderTo = ""+snapshot.child("orderTo").getValue();
-                        String deliveryFee = ""+snapshot.child("deliveryFee").getValue();
+                        String orderBy = "" + snapshot.child("orderBy").getValue();
+                        String orderCost = "" + snapshot.child("orderCost").getValue();
+                        String orderId = "" + snapshot.child("orderId").getValue();
+                        String orderStatus = "" + snapshot.child("orderStatus").getValue();
+                        String orderTime = "" + snapshot.child("orderTime").getValue();
+                        String orderTo = "" + snapshot.child("orderTo").getValue();
+                        String deliveryFee = "" + snapshot.child("deliveryFee").getValue();
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(Long.parseLong(orderTime));
-                        String dateFormated = DateFormat.format("dd/MM/yyyy",calendar).toString();
+                        String dateFormated = DateFormat.format("dd/MM/yyyy", calendar).toString();
                         buyerIdTv.setText(orderBy);
                         amountTv.setText(orderCost);
-                        if (orderStatus.equals("In Progress")){
+                        if (orderStatus.equals("In Progress")) {
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
-                            btnAcceptOrder.setVisibility(View.INVISIBLE);
+                            btnAcceptOrder.setVisibility(View.GONE);
                             selectDriver.setVisibility(View.VISIBLE);
-                        }
-                        else if(orderStatus.equals("Rider Accepted")){
+                        } else if (orderStatus.equals("Rider Accepted")) {
                             orderStatusTv.setTextColor(getResources().getColor(R.color.green));
-                            btnAcceptOrder.setVisibility(View.INVISIBLE);
-                            btnDeclineOrder.setVisibility(View.INVISIBLE);
-                            selectDriver.setVisibility(View.INVISIBLE);
-                        }else if(orderStatus.equals("Completed")){
+                            btnAcceptOrder.setVisibility(View.GONE);
+                            btnDeclineOrder.setVisibility(View.GONE);
+                            selectDriver.setVisibility(View.GONE);
+                        } else if (orderStatus.equals("Completed")) {
                             orderStatusTv.setTextColor(getResources().getColor(R.color.green));
-                            btnAcceptOrder.setVisibility(View.INVISIBLE);
-                            btnDeclineOrder.setVisibility(View.INVISIBLE);
-                            selectDriver.setVisibility(View.INVISIBLE);
-                        } else if(orderStatus.equals("Cancelled")){
+                            btnAcceptOrder.setVisibility(View.GONE);
+                            btnDeclineOrder.setVisibility(View.GONE);
+                            selectDriver.setVisibility(View.GONE);
+                        } else if (orderStatus.equals("Cancelled")) {
                             orderStatusTv.setTextColor(getResources().getColor(R.color.color_Red));
-                            btnAcceptOrder.setVisibility(View.INVISIBLE);
-                            btnDeclineOrder.setVisibility(View.INVISIBLE);
-                            selectDriver.setVisibility(View.INVISIBLE);
+                            btnAcceptOrder.setVisibility(View.GONE);
+                            btnDeclineOrder.setVisibility(View.GONE);
+                            selectDriver.setVisibility(View.GONE);
                         }
 
                         orderIdTv.setText(orderId);
@@ -306,10 +328,10 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String name = ""+snapshot.child("name").getValue();
-                        String phone = ""+snapshot.child("phone").getValue();
-                        String address = ""+snapshot.child("address").getValue();
-                        String route = ""+snapshot.child("zone").getValue();
+                        String name = "" + snapshot.child("name").getValue();
+                        String phone = "" + snapshot.child("phone").getValue();
+                        String address = "" + snapshot.child("address").getValue();
+                        String route = "" + snapshot.child("zone").getValue();
 
 
                         nameTv.setText(name);
@@ -325,6 +347,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void loadMyInfo() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(firebaseAuth.getUid())
@@ -340,7 +363,8 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                     }
                 });
     }
-    private void loadOrderedItems(){
+
+    private void loadOrderedItems() {
         orderedItemArrayList = new ArrayList<>();
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
@@ -349,15 +373,15 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         orderedItemArrayList.clear();
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            ModelOrderedItem modelOrderedItem =ds.getValue(ModelOrderedItem.class);
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            ModelOrderedItem modelOrderedItem = ds.getValue(ModelOrderedItem.class);
                             orderedItemArrayList.add(modelOrderedItem);
                         }
                         //setup adapter
                         adapterOrderedItem = new AdapterOrderedItem(OrderDetailsSellerActivity.this, orderedItemArrayList);
                         itemsRv.setAdapter(adapterOrderedItem);
 
-                        totalItemsTv.setText(""+snapshot.getChildrenCount());
+                        totalItemsTv.setText("" + snapshot.getChildrenCount());
                     }
 
                     @Override
@@ -368,34 +392,35 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
 
     }
 
-    private void prepareNotificationMessage(String orderId, String message){
+    private void prepareNotificationMessage(String orderId, String message) {
         //when seller changed order status, send notif to buyer
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="Your Order "+ orderId;
-        String NOTIFICATION_MESSAGE = "Your "+ message;
+        String NOTIFICATION_TITLE = "Your Order " + orderId;
+        String NOTIFICATION_MESSAGE = "Your " + message;
         String NOTIFICATION_TYPE = "OrderStatusChanged";
 
         JSONObject notificationJo = new JSONObject();
         JSONObject notificationBodyJo = new JSONObject();
         try {
             // mga sinesend
-            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
-            notificationBodyJo.put("buyerUid",orderBy);
-            notificationBodyJo.put("sellerUid",firebaseAuth.getUid());
-            notificationBodyJo.put("orderId",orderId);
-            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("buyerUid", orderBy);
+            notificationBodyJo.put("sellerUid", firebaseAuth.getUid());
+            notificationBodyJo.put("orderId", orderId);
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage", NOTIFICATION_MESSAGE);
             //saan i sesend
-            notificationJo.put("to",NOTIFICATION_TOPIC);
-            notificationJo.put("data",notificationBodyJo);
-        }catch (Exception e){
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo);
     }
+
     private void sendFcmNotification(JSONObject notificationJo) {
 
         //send volley request (dependencies)
@@ -410,14 +435,14 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // send failed
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 //put required headers
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type","application/json");
-                headers.put("Authorization","key="+Constants.FCM_KEY);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key=" + Constants.FCM_KEY);
                 return headers;
             }
         };
