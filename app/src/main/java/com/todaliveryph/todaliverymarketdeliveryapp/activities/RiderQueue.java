@@ -82,6 +82,7 @@ public class RiderQueue extends AppCompatActivity {
                             onlineBtn.setBackgroundResource(R.color.colorPrimary);
 
                             databaseReference.child("Users").child(firebaseAuth.getUid()).child("queue").setValue("Stand By");
+                            databaseReference.child("Users").child(firebaseAuth.getUid()).child("pendingOrder").setValue("false");
                             databaseReference.child("queue").child(String.valueOf(routeTV.getText())).child(String.valueOf(timeTV.getText())).removeValue();
 
                             Toast.makeText(RiderQueue.this, "Offline!", Toast.LENGTH_SHORT).show();
@@ -112,6 +113,7 @@ public class RiderQueue extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(RiderQueue.this, RiderDeliver.class));
+                finish();
             }
         });
 

@@ -26,7 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
+import com.todaliveryph.todaliverymarketdeliveryapp.OrderDetailsRidersActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.R;
+import com.todaliveryph.todaliverymarketdeliveryapp.RidersOrderMainActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.chats.MessageActivity;
 
 import org.json.JSONObject;
@@ -84,10 +86,8 @@ public class RiderDeliver extends AppCompatActivity {
                         Toast.makeText(RiderDeliver.this,"You accepted the order, you are now the assigned driver!",Toast.LENGTH_SHORT).show();
                         removeFromQueue();
                         prepareNotificationMessage();
-                        acceptBtn.setVisibility(View.GONE);
-                        declineBtn.setVisibility(View.GONE);
-
-
+                        startActivity(new Intent(RiderDeliver.this, RidersOrderMainActivity.class));
+                        finish();
 
                     }
                 });
@@ -115,14 +115,14 @@ public class RiderDeliver extends AppCompatActivity {
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
-                        removeFromQueue();
-                        prepareNotificationMessageDecline();
                         databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).removeValue();
                         databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                         databaseReference.child("Users").child(user).child("onQueue").setValue("");
                         databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
                         databaseReference.child("Users").child(user).child("pendingOrder").setValue("false");
                         startActivity(new Intent(RiderDeliver.this, RiderQueue.class));
+                        removeFromQueue();
+                        prepareNotificationMessageDecline();
                         finish();
                     }
                 });
@@ -143,11 +143,11 @@ public class RiderDeliver extends AppCompatActivity {
         qrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(RiderDeliver.this, ScanOrder.class);
                 intent.putExtra("orderId", orderID.getText().toString());
                 intent.putExtra("shopId",  shopIDTV.getText().toString());
                 startActivity(intent);
-
             }
         });
 
@@ -261,20 +261,18 @@ public class RiderDeliver extends AppCompatActivity {
     }
 
     private void acceptOrder() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("driverOrder")) {
                     if (snapshot.child("driverOrder").hasChild(user)) {
                         if (snapshot.child("driverOrder").child(user).child("orders").hasChild(orderID.getText().toString())) {
-                     //       Toast.makeText(RiderDeliver.this, orderID.getText().toString(), Toast.LENGTH_SHORT).show();
                             DatabaseReference myRef = databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString());
-                            myRef.addValueEventListener(new ValueEventListener() {
+                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                     databaseReference.child("driverOrder").child(user).child("orders").child(orderID.getText().toString()).child("status").setValue("Rider Accepted");
-                                    databaseReference.child("Users").child(shopIDTV.getText().toString()).child("Orders").child(orderID.getText().toString()).child("status").setValue("Rider Accepted");
                                     databaseReference.child("Users").child(user).child("lastQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("onQueue").setValue("");
                                     databaseReference.child("Users").child(user).child("queue").setValue("Stand By");
@@ -284,7 +282,7 @@ public class RiderDeliver extends AppCompatActivity {
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
-                                    throw databaseError.toException();
+
                                 }
                             });
                         }

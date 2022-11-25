@@ -54,22 +54,23 @@ public class ScanOrder extends AppCompatActivity {
     private ZXingScannerView zXingScannerView;
     private ArrayList<Integer> mSelectedIndices;
     private ProgressDialog progressDialog;
-    private FloatingActionButton flash, focus, camera,scanAgain;
+    private FloatingActionButton flash, focus, camera, scanAgain;
     private boolean isFlash, isAutoFocus;
     private int camId, frontCamId, rearCamId;
-    String getShopId,getOrderId,user,driverName;
+    String getShopId, getOrderId, user, driverName;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
     FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_order);
 
+        user = FirebaseAuth.getInstance().getUid();
         getShopId = getIntent().getStringExtra("shopId");
         getOrderId = getIntent().getStringExtra("orderId");
 
-        user = FirebaseAuth.getInstance().getUid();
         initVar();
         zXingScannerView = new ZXingScannerView(mActivity);
         setupFormats();
@@ -79,10 +80,18 @@ public class ScanOrder extends AppCompatActivity {
         activateScanner();
         initFunctionality();
         loadMyInfo();
+
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        zXingScannerView.stopCamera();
+    }
+
     private void initFunctionality() {
-        if ((ContextCompat.checkSelfPermission( mActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-                || (ContextCompat.checkSelfPermission( mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+        if ((ContextCompat.checkSelfPermission(mActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(
                     mActivity, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.PERMISSION_REQ);
         }
@@ -90,18 +99,19 @@ public class ScanOrder extends AppCompatActivity {
     }
 
     private void initVar() {
-        mActivity = ScanOrder.this;
+        mActivity = this;
         mContext = mActivity.getApplicationContext();
 
 
         loadCams();
     }
+
     private void initView() {
         contentFrame = (ViewGroup) findViewById(R.id.content_frame);
 
         flash = (FloatingActionButton) findViewById(R.id.flash);
-        camera = (FloatingActionButton)findViewById(R.id.camera);
-        scanAgain = (FloatingActionButton)findViewById(R.id.scanAgain);
+        camera = (FloatingActionButton) findViewById(R.id.camera);
+        scanAgain = (FloatingActionButton) findViewById(R.id.scanAgain);
 
     }
 
@@ -119,8 +129,8 @@ public class ScanOrder extends AppCompatActivity {
             public void onClick(View view) {
                 flash.setClickable(true);
                 camera.setClickable(true);
-                flash.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.fab));
-                camera.setBackgroundTintList(ContextCompat.getColorStateList(mContext,R.color.fab));
+                flash.setBackgroundTintList(ContextCompat.getColorStateList(mContext, R.color.fab));
+                camera.setBackgroundTintList(ContextCompat.getColorStateList(mContext, R.color.fab));
                 scanAgain.setVisibility(View.GONE);
                 zXingScannerView.startCamera(rearCamId);
                 initListener();
@@ -148,14 +158,14 @@ public class ScanOrder extends AppCompatActivity {
     }
 
     private void activateScanner() {
-        if(zXingScannerView != null) {
+        if (zXingScannerView != null) {
 
-            if(zXingScannerView.getParent()!=null) {
+            if (zXingScannerView.getParent() != null) {
                 ((ViewGroup) zXingScannerView.getParent()).removeView(zXingScannerView); // to prevent crush on re adding view
             }
             contentFrame.addView(zXingScannerView);
 
-            if(zXingScannerView.isActivated()) {
+            if (zXingScannerView.isActivated()) {
                 zXingScannerView.stopCamera();
             }
             zXingScannerView.startCamera(camId);
@@ -166,21 +176,20 @@ public class ScanOrder extends AppCompatActivity {
 
     public void setupFormats() {
         List<BarcodeFormat> formats = new ArrayList<>();
-        if(mSelectedIndices == null || mSelectedIndices.isEmpty()) {
+        if (mSelectedIndices == null || mSelectedIndices.isEmpty()) {
             mSelectedIndices = new ArrayList<>();
-            for(int i = 0; i < ZXingScannerView.ALL_FORMATS.size(); i++) {
+            for (int i = 0; i < ZXingScannerView.ALL_FORMATS.size(); i++) {
                 mSelectedIndices.add(i);
             }
         }
 
-        for(int index : mSelectedIndices) {
+        for (int index : mSelectedIndices) {
             formats.add(ZXingScannerView.ALL_FORMATS.get(index));
         }
-        if(zXingScannerView != null) {
+        if (zXingScannerView != null) {
             zXingScannerView.setFormats(formats);
         }
     }
-
 
 
     private void toggleFlash() {
@@ -222,12 +231,12 @@ public class ScanOrder extends AppCompatActivity {
 
     }
 
-    private void loadMyInfo(){
-        driverName ="";
+    private void loadMyInfo() {
+        driverName = "";
         databaseReference.child("Users").child(user).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     String getDriverName = snapshot.child("name").getValue(String.class);
                     driverName = getDriverName;
                 }
@@ -240,50 +249,50 @@ public class ScanOrder extends AppCompatActivity {
         });
     }
 
-    private void completeOrderScan(String orderId){
-        if(orderId.equals(getOrderId)){
+    private void completeOrderScan(String orderId) {
+        if (orderId.equals(getOrderId)) {
             databaseReference.child("Users").child(getShopId).child("Orders").child(getOrderId).child("orderStatus").setValue("Completed");
             databaseReference.child("driverOrder").child(user).child("orders").child(getOrderId).child("status").setValue("Completed");
-            Toast.makeText(ScanOrder.this,"Successfully Completed the order!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ScanOrder.this, "Successfully Completed the order!", Toast.LENGTH_SHORT).show();
             vibrate();
             prepareNotificationMessage();
-            finish();
-        }
-        else{
+            mActivity.finish();
+        } else {
             noRecord();
-            Toast.makeText(ScanOrder.this,"QR Code not found! Try again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ScanOrder.this, "QR Code not found! Try again", Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    private void prepareNotificationMessage(){
+    private void prepareNotificationMessage() {
         //when seller changed order status, send notif to buyer
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="Rider "+driverName+" delivered the item(s)";
-        String NOTIFICATION_MESSAGE =  "Rider successfully delivered the item(s)";
+        String NOTIFICATION_TITLE = "Rider " + driverName + " delivered the item(s)";
+        String NOTIFICATION_MESSAGE = "Rider successfully delivered the item(s)";
         String NOTIFICATION_TYPE = "RiderCompleteOrder";
 
         JSONObject notificationJo = new JSONObject();
         JSONObject notificationBodyJo = new JSONObject();
         try {
             // mga sinesend
-            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
-            notificationBodyJo.put("riderUid",getShopId);
-            notificationBodyJo.put("sellerUid",user);
-            notificationBodyJo.put("orderId",getOrderId+" successfully delivered");
-            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid", getShopId);
+            notificationBodyJo.put("sellerUid", user);
+            notificationBodyJo.put("orderId", getOrderId + " successfully delivered");
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage", NOTIFICATION_MESSAGE);
             //saan i sesend
-            notificationJo.put("to",NOTIFICATION_TOPIC);
-            notificationJo.put("data",notificationBodyJo);
-        }catch (Exception e){
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo);
     }
+
     private void sendFcmNotification(JSONObject notificationJo) {
 
         //send volley request (dependencies)
@@ -299,15 +308,14 @@ public class ScanOrder extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // send failed
             }
-        })
-        {
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 //put required headers
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type","application/json");
-                headers.put("Authorization","key="+Constants.FCM_KEY);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key=" + Constants.FCM_KEY);
                 return headers;
             }
         };
@@ -316,17 +324,17 @@ public class ScanOrder extends AppCompatActivity {
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 
-    private void noRecord(){
+    private void noRecord() {
         flash.setClickable(false);
         camera.setClickable(false);
-        flash.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorGray01));
-        camera.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.colorGray01));
+        flash.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorGray01));
+        camera.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorGray01));
         scanAgain.setVisibility(View.VISIBLE);
 
         vibrate();
     }
 
-    private void vibrate(){
+    private void vibrate() {
         final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         final VibrationEffect vibrationEffect1;
         // this is the only type of the vibration which requires system version Oreo (API 26)
@@ -341,5 +349,6 @@ public class ScanOrder extends AppCompatActivity {
 
     }
 
-
 }
+
+
