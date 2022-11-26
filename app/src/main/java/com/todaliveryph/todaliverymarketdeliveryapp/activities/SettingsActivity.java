@@ -318,6 +318,7 @@ public class SettingsActivity extends AppCompatActivity {
                         //image picked
                         Intent data = result.getData();
                         image_uri = data.getData();
+                        uploadId();
 
                     }else{
                         //cancelled
