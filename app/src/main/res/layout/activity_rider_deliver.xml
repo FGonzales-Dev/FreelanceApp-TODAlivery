@@ -243,7 +243,7 @@
                         android:textColor="@color/black"
                         />
                     <TextView
-                        android:id="@+id/amountTV"
+                        android:id="@+id/subAmountTV"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text=""
@@ -251,7 +251,31 @@
                         android:layout_marginBottom="10dp"
                         android:layout_below="@id/driverNameTV"
                         android:gravity="center"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:id="@+id/deliveryFeeTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/subAmountTV"
+                        android:gravity="center"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        />
+                    <TextView
+                        android:id="@+id/amountTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/deliveryFeeTV"
+                        android:gravity="center"
+                        android:textSize="18sp"
                         android:textColor="@color/black"
                         />
                     <TextView

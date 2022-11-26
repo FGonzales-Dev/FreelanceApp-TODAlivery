@@ -45,14 +45,15 @@ import java.util.Map;
 
 public class AdminUserProfileActivity extends AppCompatActivity {
 
-    String uid,currentUser;
+    String uid, currentUser;
     private TextView TVfrontname, TVfname, TVphone, TVaddress;
-    private ImageView picProfile,id_image;
+    private ImageView picProfile, id_image;
     private ProgressDialog progressDialog;
     private LinearLayout idVerificationLayout;
     private Button editBTN, approved, decline;
     private ImageButton backBTN;
     private FirebaseAuth firebaseAuth;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,22 +74,22 @@ public class AdminUserProfileActivity extends AppCompatActivity {
         decline = findViewById(R.id.Decline);
         idVerificationLayout = findViewById(R.id.idVerificationLayout);
         firebaseAuth = FirebaseAuth.getInstance();
-        backBTN =findViewById(R.id.BTNback);
+        backBTN = findViewById(R.id.BTNback);
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
         currentUser = firebaseAuth.getCurrentUser().getUid();
         checkUser();
 
-
+        checkControls();
         decline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 progressDialog.setMessage("Updating User...");
                 progressDialog.show();
                 //url received
-                HashMap<String,Object> hashMap = new HashMap<>();
-                hashMap.put("riderAccepted","false");
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("riderAccepted", "false");
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
                 ref.child(uid).updateChildren(hashMap)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -103,7 +104,7 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // Failed Show error message
-                                Toast.makeText(AdminUserProfileActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AdminUserProfileActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -115,8 +116,8 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                 progressDialog.setMessage("Updating User...");
                 progressDialog.show();
                 //url received
-                HashMap<String,Object> hashMap = new HashMap<>();
-                hashMap.put("riderAccepted","true");
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("riderAccepted", "true");
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
                 ref.child(uid).updateChildren(hashMap)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -131,19 +132,18 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // Failed Show error message
-                                Toast.makeText(AdminUserProfileActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AdminUserProfileActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
             }
         });
 
 
-
         editBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AdminUserProfileActivity.this, AdminProfileEditUserActivity.class);
-                intent.putExtra("userUid",uid);
+                intent.putExtra("userUid", uid);
                 AdminUserProfileActivity.this.startActivity(intent);
 //                startActivity(new Intent(AdminUserProfileActivity.this, ProfileEditUserActivity.class));
             }
@@ -157,19 +157,17 @@ public class AdminUserProfileActivity extends AppCompatActivity {
         });
 
 
-
     }// create bundle closing
 
     private void checkUser() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user == null ){
+        if (user == null) {
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
             finish();
-        }else{
+        } else {
             loadMyInfo();
         }
     }
-
 
 
     private void loadMyInfo() {
@@ -178,38 +176,38 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
+                        for (DataSnapshot ds : snapshot.getChildren()) {
 
-                            String uid = ""+ds.child("").getValue();
-                            String email = ""+ds.child("email").getValue();
-                            String name = ""+ds.child("name").getValue();
-                            String phone = ""+ds.child("phone").getValue();
-                            String address = ""+ds.child("address").getValue();
-                            String timestamp = ""+ds.child("timestamp").getValue();
-                            String accountType =""+ds.child("accountType").getValue();
-                            String online = ""+ds.child("online").getValue();
-                            String profileImage = ""+ds.child("profileImage").getValue();
-                            String IdImage = ""+ds.child("IdImage").getValue();
+                            String uid = "" + ds.child("").getValue();
+                            String email = "" + ds.child("email").getValue();
+                            String name = "" + ds.child("name").getValue();
+                            String phone = "" + ds.child("phone").getValue();
+                            String address = "" + ds.child("address").getValue();
+                            String timestamp = "" + ds.child("timestamp").getValue();
+                            String accountType = "" + ds.child("accountType").getValue();
+                            String online = "" + ds.child("online").getValue();
+                            String profileImage = "" + ds.child("profileImage").getValue();
+                            String IdImage = "" + ds.child("IdImage").getValue();
 
                             TVfname.setText(name);
                             TVfrontname.setText(name);
                             TVphone.setText(phone);
                             TVaddress.setText(address);
-                            if (accountType.equals("Rider")){
+                            if (accountType.equals("Rider")) {
                                 id_image.setVisibility(View.VISIBLE);
                                 idVerificationLayout.setVisibility(View.VISIBLE);
                             }
 
                             try {
                                 Picasso.get().load(IdImage).placeholder(R.drawable.add_profile).into(id_image);
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 id_image.setImageResource(R.drawable.add_profile);
                             }
 
 
                             try {
                                 Picasso.get().load(profileImage).placeholder(R.drawable.add_profile).into(picProfile);
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 picProfile.setImageResource(R.drawable.add_profile);
                             }
                         }
@@ -222,67 +220,68 @@ public class AdminUserProfileActivity extends AppCompatActivity {
                 });
     }
 
-    public void onBackPressed () {
+    public void onBackPressed() {
         finish();
     }
 
-    private void prepareNotificationMessageApproved(){
+    private void prepareNotificationMessageApproved() {
         //when seller changed order status, send notif to buyer
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="ID Verification";
-        String NOTIFICATION_MESSAGE =  "ID Verification Approved";
+        String NOTIFICATION_TITLE = "ID Verification";
+        String NOTIFICATION_MESSAGE = "ID Verification Approved";
         String NOTIFICATION_TYPE = "IdVerification";
 
         JSONObject notificationJo = new JSONObject();
         JSONObject notificationBodyJo = new JSONObject();
         try {
             // mga sinesend
-            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
-            notificationBodyJo.put("riderUid",uid);
-            notificationBodyJo.put("adminUid",currentUser);
-            notificationBodyJo.put("message","ID Verification Update");
-            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid", uid);
+            notificationBodyJo.put("adminUid", currentUser);
+            notificationBodyJo.put("message", "ID Verification Update");
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage", NOTIFICATION_MESSAGE);
             //saan i sesend
-            notificationJo.put("to",NOTIFICATION_TOPIC);
-            notificationJo.put("data",notificationBodyJo);
-        }catch (Exception e){
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo);
     }
 
-    private void prepareNotificationMessageDecline(){
+    private void prepareNotificationMessageDecline() {
         //when seller changed order status, send notif to buyer
 
         //prepare data  for notif
 
         String NOTIFICATION_TOPIC = "/topics/" + Constants.FCM_TOPIC;
-        String NOTIFICATION_TITLE ="ID Verification";
-        String NOTIFICATION_MESSAGE =  "ID Verification Declined";
+        String NOTIFICATION_TITLE = "ID Verification";
+        String NOTIFICATION_MESSAGE = "ID Verification Declined";
         String NOTIFICATION_TYPE = "IdVerification";
 
         JSONObject notificationJo = new JSONObject();
         JSONObject notificationBodyJo = new JSONObject();
         try {
             // mga sinesend
-            notificationBodyJo.put("notificationType",NOTIFICATION_TYPE);
-            notificationBodyJo.put("riderUid",uid);
-            notificationBodyJo.put("adminUid",currentUser);
-            notificationBodyJo.put("message","ID Verification Update");
-            notificationBodyJo.put("notificationTitle",NOTIFICATION_TITLE);
-            notificationBodyJo.put("notificationMessage",NOTIFICATION_MESSAGE);
+            notificationBodyJo.put("notificationType", NOTIFICATION_TYPE);
+            notificationBodyJo.put("riderUid", uid);
+            notificationBodyJo.put("adminUid", currentUser);
+            notificationBodyJo.put("message", "ID Verification Update");
+            notificationBodyJo.put("notificationTitle", NOTIFICATION_TITLE);
+            notificationBodyJo.put("notificationMessage", NOTIFICATION_MESSAGE);
             //saan i sesend
-            notificationJo.put("to",NOTIFICATION_TOPIC);
-            notificationJo.put("data",notificationBodyJo);
-        }catch (Exception e){
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            notificationJo.put("to", NOTIFICATION_TOPIC);
+            notificationJo.put("data", notificationBodyJo);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         sendFcmNotification(notificationJo);
     }
+
     private void sendFcmNotification(JSONObject notificationJo) {
 
         //send volley request (dependencies)
@@ -298,21 +297,47 @@ public class AdminUserProfileActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // send failed
             }
-        })
-        {
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
 
                 //put required headers
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type","application/json");
-                headers.put("Authorization","key="+Constants.FCM_KEY);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key=" + Constants.FCM_KEY);
                 return headers;
             }
         };
 
         //Enque volley request
         Volley.newRequestQueue(this).add(jsonObjectRequest);
+    }
+
+    private void checkControls() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+        ref.orderByChild("uid").equalTo(uid).
+                addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String accountType = "" + ds.child("accountType").getValue(String.class);
+                            if (accountType.equals("Rider")) {
+                                String riderAccepted = "" + ds.child("riderAccepted").getValue(String.class);
+                                if (riderAccepted.equals("true")) {
+                                    approved.setVisibility(View.GONE);
+                                    decline.setVisibility(View.GONE);
+                                }
+                            }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
 

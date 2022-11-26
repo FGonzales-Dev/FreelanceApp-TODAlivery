@@ -385,14 +385,17 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
         String timestamp = "" + System.currentTimeMillis();
         String cost = allTotalPriceTv.getText().toString().trim().replace("₱", "");
-
+        String costWithoutFee = sTotalTv.getText().toString().trim().replace("₱", "");
+        String fee = dFeeTv.getText().toString().trim().replace("₱", "");
         //Setup Order Data
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("orderId", "" + timestamp);
         hashMap.put("orderTime", "" + timestamp);
         hashMap.put("orderStatus", "Pending");
-        hashMap.put("orderCost", "" + cost);
+        hashMap.put("orderCost", "" + costWithoutFee);
+        hashMap.put("orderTotalCost", "" + cost);
+        hashMap.put("orderDeliveryFee", "" + fee);
         hashMap.put("orderBy", "" + firebaseAuth.getUid());
         hashMap.put("orderTo", "" + shopUid);
 

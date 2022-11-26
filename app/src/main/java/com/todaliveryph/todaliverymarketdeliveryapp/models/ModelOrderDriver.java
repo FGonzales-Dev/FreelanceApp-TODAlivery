@@ -2,16 +2,18 @@ package com.todaliveryph.todaliverymarketdeliveryapp.models;
 
 public class ModelOrderDriver {
 
-    String customerAddress,customerName,customerPhone,itemsAmount,orderId,shopId,status,orderTime,customerId;
+    String customerAddress,customerName,customerPhone,itemsAmount,itemsDeliveryFee,itemsTotalCost,orderId,shopId,status,orderTime,customerId;
 
     public ModelOrderDriver() {
 
     }
 
-    public ModelOrderDriver(String customerAddress, String customerName, String customerPhone, String itemsAmount, String orderId,String orderTime, String shopId,String status,String customerId) {
+    public ModelOrderDriver(String customerAddress, String customerName, String customerPhone, String itemsAmount,String itemsDeliveryFee,String itemsTotalCost, String orderId,String orderTime, String shopId,String status,String customerId) {
         this.customerAddress = customerAddress;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
+        this.itemsDeliveryFee= itemsDeliveryFee;
+        this.itemsTotalCost= itemsTotalCost;
         this.itemsAmount = itemsAmount;
         this.orderId = orderId;
         this.orderTime = orderTime;
@@ -42,6 +44,22 @@ public class ModelOrderDriver {
 
     public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
+    }
+
+    public String getItemsDeliveryFee() {
+        return itemsDeliveryFee;
+    }
+
+    public void setItemsDeliveryFee(String itemsDeliveryFee) {
+        this.itemsDeliveryFee = itemsDeliveryFee;
+    }
+
+    public String getItemsTotalCost() {
+        return itemsTotalCost;
+    }
+
+    public void setItemsTotalCost(String itemsTotalCost) {
+        this.itemsTotalCost = itemsTotalCost;
     }
 
     public String getCustomerName() {

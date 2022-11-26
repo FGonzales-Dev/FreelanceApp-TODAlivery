@@ -44,7 +44,7 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
 
     private ImageButton backBtn, editBtn;
     private TextView orderIdTv, dateTv, orderStatusTv, nameTv, phoneTv, buyerIdTv,
-            totalItemsTv, amountTv, addressTv, routeTv;
+            totalItemsTv, amountTv, addressTv, routeTv,deliveryFeeTv,totalAmountTv;
     private Button btnDeclineOrder, btnAcceptOrder, selectDriver;
     private RecyclerView itemsRv;
     String orderId, orderBy;
@@ -74,7 +74,8 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
         selectDriver = findViewById(R.id.selectDriverBtn);
         routeTv = findViewById(R.id.driverRouteTv);
         buyerIdTv = findViewById(R.id.buyerIDTv);
-
+        deliveryFeeTv = findViewById(R.id.deliveryFeeTv);
+        totalAmountTv = findViewById(R.id.totalAmountTv);
         orderId = getIntent().getStringExtra("orderId");
         orderBy = getIntent().getStringExtra("orderBy");
         firebaseAuth = FirebaseAuth.getInstance();
@@ -94,6 +95,8 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                 intent.putExtra("name", nameTv.getText().toString());
                 intent.putExtra("buyerID", buyerIdTv.getText().toString());
                 intent.putExtra("amount", amountTv.getText().toString());
+                intent.putExtra("deliveryFee", deliveryFeeTv.getText().toString());
+                intent.putExtra("totalAmount", totalAmountTv.getText().toString());
                 intent.putExtra("items", itemsRv.getChildCount());
                 intent.putExtra("phone", phoneTv.getText().toString());
                 startActivity(intent);
@@ -279,13 +282,15 @@ public class OrderDetailsSellerActivity extends AppCompatActivity {
                         String orderId = "" + snapshot.child("orderId").getValue();
                         String orderStatus = "" + snapshot.child("orderStatus").getValue();
                         String orderTime = "" + snapshot.child("orderTime").getValue();
-                        String orderTo = "" + snapshot.child("orderTo").getValue();
-                        String deliveryFee = "" + snapshot.child("deliveryFee").getValue();
+                        String orderTotal = "" + snapshot.child("orderTotalCost").getValue();
+                        String deliveryFee = "" + snapshot.child("orderDeliveryFee").getValue();
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(Long.parseLong(orderTime));
                         String dateFormated = DateFormat.format("dd/MM/yyyy", calendar).toString();
                         buyerIdTv.setText(orderBy);
                         amountTv.setText(orderCost);
+                        totalAmountTv.setText(orderTotal);
+                        deliveryFeeTv.setText(deliveryFee);
                         if (orderStatus.equals("In Progress")) {
                             orderStatusTv.setTextColor(getResources().getColor(R.color.colorPrimary));
                             btnAcceptOrder.setVisibility(View.GONE);

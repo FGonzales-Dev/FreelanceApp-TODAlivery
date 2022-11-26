@@ -39,7 +39,7 @@ public class OrderDriver extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
     FirebaseAuth firebaseAuth;
-    String getRoute, getOrderID, getCustomerName, getOrderAmount, getCustomerAddress, getCustomerID, getCustomerPhone;
+    String getRoute, getOrderID, getCustomerName, getOrderAmount, getCustomerAddress, getCustomerID, getCustomerPhone,getTotalOrderAmount,getDeliveryFee;
     TextView driverName, driverNumber, driverStatus, driverRoute, driverStatusNote, driverID;
     Button informBtn;
     String user,getRiderPendingOrder;
@@ -58,6 +58,8 @@ public class OrderDriver extends AppCompatActivity {
         getCustomerPhone = getIntent().getStringExtra("phone");
         getOrderAmount = getIntent().getStringExtra("amount");
         getCustomerID = getIntent().getStringExtra("buyerID");
+        getTotalOrderAmount = getIntent().getStringExtra("totalAmount");
+        getDeliveryFee = getIntent().getStringExtra("deliveryFee");
 
         driverName = findViewById(R.id.driverNameTV);
         driverNumber = findViewById(R.id.driverNumberTV);
@@ -84,6 +86,8 @@ public class OrderDriver extends AppCompatActivity {
                     databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerName").setValue(getCustomerName);
                     databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerAddress").setValue(getCustomerAddress);
                     databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("itemsAmount").setValue(getOrderAmount);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("itemsDeliveryFee").setValue(getDeliveryFee);
+                    databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("itemsTotalCost").setValue(getTotalOrderAmount);
                     databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("customerPhone").setValue(getCustomerPhone);
                     databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("status").setValue("Pending");
                     databaseReference.child("driverOrder").child(driverID.getText().toString()).child("orders").child(getOrderID).child("route").setValue(getRoute);

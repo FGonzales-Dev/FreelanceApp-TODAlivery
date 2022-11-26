@@ -53,6 +53,8 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
         String customerName = modelOrderDriver.getCustomerName();
         String customerPhone= modelOrderDriver.getCustomerPhone();
         String itemsAmount = modelOrderDriver.getItemsAmount();
+        String itemsDeliveryFee = modelOrderDriver.getItemsDeliveryFee();
+        String itemsTotalCost = modelOrderDriver.getItemsTotalCost();
         String shopId = modelOrderDriver.getShopId();
         String date = modelOrderDriver.getOrderTime();
         String status = modelOrderDriver.getStatus();
@@ -60,7 +62,7 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
         //get shop info
      //  loadShopInfo(modelOrderDriver, holder);
         holder.customerNameTv.setText(customerName);
-        holder.amountTv.setText("Amount: "+itemsAmount);
+        holder.amountTv.setText("Amount: "+itemsTotalCost);
         holder.statusTv.setText(status);
         holder.orderIdTv.setText("Order ID: "+orderId);
         Calendar calendar = Calendar.getInstance();
@@ -103,6 +105,8 @@ public class AdapterOrderDriver extends RecyclerView.Adapter<AdapterOrderDriver.
                 intent.putExtra("date",date);
                 intent.putExtra("status",status);
                 intent.putExtra("amount",itemsAmount);
+                intent.putExtra("deliveryFee",itemsDeliveryFee);
+                intent.putExtra("totalCost",itemsTotalCost);
                 intent.putExtra("buyerId",customerId);
 
                 context.startActivity(intent);

@@ -39,7 +39,7 @@ import java.util.Map;
 public class RiderDeliver extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
     FirebaseAuth firebaseAuth;
-    TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute;
+    TextView shopIDTV,sellerName, sellerAddress, sellerPhone, orderID, buyerName, buyerAddress, buyerPhone, driverName, amount, status, buyerRoute,totalAmount,deliveryFee;
     String user;
     Button acceptBtn, declineBtn,qrBtn;
     ImageView backBtn;
@@ -62,6 +62,8 @@ public class RiderDeliver extends AppCompatActivity {
         status = findViewById(R.id.statusTV);
         buyerRoute = findViewById(R.id.buyerRouteTV);
         shopIDTV= findViewById(R.id.shopIDTV);
+        totalAmount = findViewById(R.id.subAmountTV);
+        deliveryFee = findViewById(R.id.deliveryFeeTV);
 
         acceptBtn = findViewById(R.id.acceptBtn);
         declineBtn = findViewById(R.id.declineBtn);
@@ -181,6 +183,8 @@ public class RiderDeliver extends AppCompatActivity {
                                         String getItemsAmount = childSnapshot.child("itemsAmount").getValue(String.class);
                                         String getOrderID = childSnapshot.child("orderId").getValue(String.class);
                                         String getShopID = childSnapshot.child("shopId").getValue(String.class);
+                                        String getDeliveryFee= childSnapshot.child("itemsDeliveryFee").getValue(String.class);
+                                        String getTotalCost= childSnapshot.child("itemsTotalCost").getValue(String.class);
                                         String getStatus = childSnapshot.child("status").getValue(String.class);
                                         String getBuyerRoute = childSnapshot.child("route").getValue(String.class);
 
@@ -189,8 +193,9 @@ public class RiderDeliver extends AppCompatActivity {
                                         buyerAddress.setText(getCustomerAddress);
                                         buyerPhone.setText(getCustomerPhone);
                                         buyerRoute.setText(getBuyerRoute);
-
-                                        amount.setText("₱ "+getItemsAmount);
+                                        totalAmount.setText("Item(s) Amount : ₱ "+getItemsAmount);
+                                        deliveryFee.setText("Item(s) Delivery Fee : ₱ "+getDeliveryFee);
+                                        amount.setText("Amount to collect : ₱ "+getTotalCost);
 
                                         try{
                                             if (getStatus.equals("Pending")) {

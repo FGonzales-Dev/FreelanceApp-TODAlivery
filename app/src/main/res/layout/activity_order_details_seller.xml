@@ -197,11 +197,51 @@
                    android:layout_marginTop="5dp"
                    android:layout_marginEnd="5dp"
                    android:textColor="@color/black"
-                   android:text="Items amount :"
+                   android:text="Items sub amount :"
                    android:textStyle="bold"/>
 
                <TextView
                    android:id="@+id/amountTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="9999"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Items delivery fee :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/deliveryFeeTv"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="9999"
+                   android:layout_weight="1"/>
+           </TableRow>
+           <TableRow>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:layout_marginEnd="5dp"
+                   android:textColor="@color/black"
+                   android:text="Items total fee :"
+                   android:textStyle="bold"/>
+
+               <TextView
+                   android:id="@+id/totalAmountTv"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="5dp"

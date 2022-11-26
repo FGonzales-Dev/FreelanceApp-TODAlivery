@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,9 +29,10 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todalivery-market-delive-ace4f-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
     FirebaseAuth firebaseAuth;
-    String getCustomerName, getCustomerPhone, getCustomerAddress, getShopId, getOrderId, getDate, getStatus, getAmount,getCustomerId;
-    TextView customerNameTV,customerIDTV, customerAddressTV, customerPhoneTV, shopNameTV, shopAddressTV, shopPhoneTV, orderIdTV, dateTV, statusTV, amountTV, noteTV;
+    String getCustomerName, getCustomerPhone, getCustomerAddress, getShopId, getOrderId, getDate, getStatus, getAmount,getCustomerId,getDeliveryFee,getTotalCost;
+    TextView customerNameTV,customerIDTV, customerAddressTV, customerPhoneTV, shopNameTV, shopAddressTV, shopPhoneTV, orderIdTV, dateTV, statusTV, amountTV, noteTV,deliveryFeeTV,totalCostTV;
     Button chatCustomer,qrBtn;
+    ImageView backBtn;
     String user;
 
     @Override
@@ -46,6 +48,8 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         getDate = getIntent().getStringExtra("date");
         getStatus = getIntent().getStringExtra("status");
         getAmount = getIntent().getStringExtra("amount");
+        getDeliveryFee = getIntent().getStringExtra("deliveryFee");
+        getTotalCost = getIntent().getStringExtra("totalCost");
         getCustomerId = getIntent().getStringExtra("buyerId");
 
         user = firebaseAuth.getInstance().getUid();
@@ -60,10 +64,13 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         dateTV = findViewById(R.id.dateTv);
         statusTV = findViewById(R.id.orderStatusTv);
         amountTV = findViewById(R.id.amountTv);
+        deliveryFeeTV = findViewById(R.id.deliveryFeeTv);
+        totalCostTV = findViewById(R.id.totalCostTv);
         noteTV = findViewById(R.id.noteTV);
 
         chatCustomer = findViewById(R.id.chatBtn);
         qrBtn = findViewById(R.id.qrBtn);
+        backBtn = findViewById(R.id.backBtn);
 
         loadShopInfo();
         loadOrderInfo();
@@ -91,6 +98,13 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
 
             }
         });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private void loadOrderInfo() {
@@ -100,6 +114,8 @@ public class OrderDetailsRidersActivity extends AppCompatActivity {
         orderIdTV.setText(getOrderId);
         statusTV.setText(getStatus);
         amountTV.setText("₱ "+getAmount);
+        deliveryFeeTV.setText("₱ "+getDeliveryFee);
+        totalCostTV.setText("₱ "+getTotalCost);
 
 
         Calendar calendar = Calendar.getInstance();
