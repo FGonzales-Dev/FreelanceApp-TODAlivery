@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +28,7 @@ public class SellerSaleReportActivity extends AppCompatActivity {
     ImageButton backBtn;
     ImageView picIV;
     TextView shopNameTV, addressTV, revenueTV, itemSoldTV, itemQuantityTV, successTV, failedTV;
-
+    double revenue;
     FirebaseAuth firebaseAuth;
 
     @Override
@@ -56,7 +57,7 @@ public class SellerSaleReportActivity extends AppCompatActivity {
         });
     }
 
-    public double revenue = 0.00;
+
 
     private void loadMyInfo() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
@@ -100,6 +101,7 @@ public class SellerSaleReportActivity extends AppCompatActivity {
     }
 
     private void loadReport() {
+
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(firebaseAuth.getUid()).child("Products")
                 .addValueEventListener(new ValueEventListener() {
@@ -162,15 +164,18 @@ public class SellerSaleReportActivity extends AppCompatActivity {
 
                     }
                 });
+
         ref.child(firebaseAuth.getUid()).child("Orders")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        revenue = 0.00;
                         for (DataSnapshot ds: snapshot.getChildren()){
                             String status = ds.child("orderStatus").getValue(String.class);
                             if(status.equals("Completed")){
                                 String orderCost = ds.child("orderCost").getValue(String.class);
                                Double revenueConverted= Double.parseDouble(orderCost);
+                                Toast.makeText(SellerSaleReportActivity.this, String.valueOf(revenueConverted), Toast.LENGTH_SHORT).show();
                                 revenue +=revenueConverted;
                             }
                         }
