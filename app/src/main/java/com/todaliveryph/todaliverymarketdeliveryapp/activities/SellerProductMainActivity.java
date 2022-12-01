@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.todaliveryph.todaliverymarketdeliveryapp.SellerSaleReportActivity;
 import com.todaliveryph.todaliverymarketdeliveryapp.adapters.AdapterProductSeller;
 import com.todaliveryph.todaliverymarketdeliveryapp.Constants;
 import com.todaliveryph.todaliverymarketdeliveryapp.models.ModelProduct;
@@ -36,7 +37,7 @@ public class SellerProductMainActivity extends AppCompatActivity {
     private TextView shopnameSTV, phoneSTV, addressSTV,filteredProductsTv;
     private ImageView picIV, addProductsIV;
     private EditText searchProductEt;
-    private ImageButton filterProductsBtn , backBTN, reviewsBtn;
+    private ImageButton filterProductsBtn , backBTN, reviewsBtn,saleReportBtn;
     private FirebaseAuth firebaseAuth;
     private RecyclerView productsRv;
 
@@ -61,6 +62,8 @@ public class SellerProductMainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         backBTN = findViewById(R.id.backBTN);
         reviewsBtn = findViewById(R.id.reviewsBtn);
+        saleReportBtn = findViewById(R.id.inventoryIV);
+
         checkUser();
         loadAllProducts();
 
@@ -130,6 +133,14 @@ public class SellerProductMainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SellerProductMainActivity.this, ShopReviewsActivity.class);
                 intent.putExtra("shopUid", ""+firebaseAuth.getUid());
+                startActivity(intent);
+            }
+        });
+
+        saleReportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SellerProductMainActivity.this, SellerSaleReportActivity.class);
                 startActivity(intent);
             }
         });
