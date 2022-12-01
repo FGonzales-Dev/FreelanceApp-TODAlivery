@@ -175,7 +175,7 @@ public class SellerSaleReportActivity extends AppCompatActivity {
                             if(status.equals("Completed")){
                                 String orderCost = ds.child("orderCost").getValue(String.class);
                                Double revenueConverted= Double.parseDouble(orderCost);
-                                Toast.makeText(SellerSaleReportActivity.this, String.valueOf(revenueConverted), Toast.LENGTH_SHORT).show();
+                              //  Toast.makeText(SellerSaleReportActivity.this, String.valueOf(revenueConverted), Toast.LENGTH_SHORT).show();
                                 revenue +=revenueConverted;
                             }
                         }
